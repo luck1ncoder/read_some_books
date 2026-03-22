@@ -48,8 +48,9 @@ Stores the full content of any page where the user has highlighted text.
 | url        | TEXT    | UNIQUE — one record per URL    |
 | title      | TEXT    | page `<title>`                 |
 | full_text  | TEXT    | entire article as plain text   |
-| html       | TEXT    | optional raw HTML for re-render|
 | saved_at   | INTEGER | unix timestamp                 |
+
+Note: `html` field is excluded (YAGNI — storing raw HTML brings large file sizes and XSS risk with no clear v1 use case).
 
 ### highlights
 One row per selection made by the user.
@@ -59,22 +60,38 @@ One row per selection made by the user.
 | id         | TEXT PK | uuid                                       |
 | page_id    | TEXT FK | references pages.id                        |
 | text       | TEXT    | the selected text                          |
-| position   | TEXT    | serialized DOM range (for re-highlighting) |
+| color      | TEXT    | DEFAULT 'yellow' — reserved for future     |
+| position   | TEXT    | serialized anchor (see Position Strategy)  |
 | created_at | INTEGER | unix timestamp                             |
+
+**Position Strategy:** DOM Range objects are fragile across page re-renders. We use a text-anchor approach:
+- Store `{ text, prefix, suffix }` — the highlighted text plus exactly 50 chars of surrounding context
+- On restore, search `document.body.innerText` for the anchor string and apply highlight
+- Fallback: if anchor not found (e.g. dynamic page), skip re-highlighting silently — highlight still exists in DB
+- This is simpler and more robust than XPath/CSS-selector approaches for most static/article pages
+
+Example JSON stored in `position`:
+```json
+{ "v": 1, "text": "划线的内容", "prefix": "前面50个字符", "suffix": "后面50个字符" }
+```
+`v` is a version field to support future anchor strategy migrations without breaking existing records.
 
 ### cards
 A knowledge card, optionally linked to a highlight.
 
-| Column         | Type    | Notes                              |
-|----------------|---------|------------------------------------|
-| id             | TEXT PK | uuid                               |
-| highlight_id   | TEXT FK | nullable — can be standalone card  |
-| title          | TEXT    |                                    |
-| ai_explanation | TEXT    | AI-generated explanation           |
-| my_note        | TEXT    | user's personal note/opinion       |
-| tags           | TEXT    | JSON array of strings              |
-| created_at     | INTEGER | unix timestamp                     |
-| updated_at     | INTEGER | unix timestamp                     |
+| Column         | Type    | Notes                                  |
+|----------------|---------|----------------------------------------|
+| id             | TEXT PK | uuid                                   |
+| highlight_id   | TEXT FK | nullable — can be standalone card      |
+| page_id        | TEXT FK | nullable — directly links card to page |
+| title          | TEXT    |                                        |
+| ai_explanation | TEXT    | AI-generated explanation               |
+| my_note        | TEXT    | user's personal note/opinion           |
+| tags           | TEXT    | JSON array of strings                  |
+| created_at     | INTEGER | unix timestamp                         |
+| updated_at     | INTEGER | unix timestamp                         |
+
+Note: `page_id` is denormalized here so that standalone cards (no highlight) can still be grouped by source page, and "按网站" filtering works correctly.
 
 ### chat_messages
 Per-card AI conversation history.
@@ -87,9 +104,20 @@ Per-card AI conversation history.
 | content    | TEXT    |                          |
 | created_at | INTEGER | unix timestamp           |
 
+### settings
+Key-value store for user configuration.
+
+| Column | Type    | Notes                                |
+|--------|---------|--------------------------------------|
+| key    | TEXT PK | e.g. `openai_api_key`, `openai_model`|
+| value  | TEXT    | stored as plain text in local SQLite |
+
+Note: API key is stored in local SQLite (same trust boundary as the user's machine). No encryption needed for v1 — the file is not exposed to the network.
+
 **Key decisions:**
 - `pages.full_text` is sent as AI context — the whole article, not a snippet
 - `highlights` and `cards` are decoupled — a card can exist without a highlight
+- `cards.page_id` denormalized for efficient "group by site" queries
 - No ORM; use `better-sqlite3` directly for simplicity and reliability
 
 ---
@@ -116,9 +144,10 @@ Per-card AI conversation history.
 ### 4.2 Background (`background.ts`)
 
 - Service Worker
-- Receives messages from content-script and sidepanel
-- Proxies all HTTP requests to `localhost:7749`
-- Handles first-time page save: extracts `document.title` and `document.body.innerText`, sends to `POST /pages`
+- Receives messages from content-script and sidepanel via `chrome.runtime.sendMessage`
+- Proxies all non-streaming HTTP requests to `localhost:7749` using `fetch`
+- **SSE streaming:** For [解释这段话], content-script directly fetches `localhost:7749/ai/explain` (not proxied through background). `manifest.json` must include `"host_permissions": ["http://localhost:7749/*"]` to allow content-script cross-origin requests to localhost.
+- Handles first-time page save: receives page content from content-script, sends to `POST /pages`
 
 ### 4.3 SidePanel
 
@@ -137,23 +166,33 @@ Per-card AI conversation history.
 |--------|-------------------------|----------------------------------------|
 | POST   | /pages                  | Save or update a page's full content   |
 | POST   | /highlights             | Save a new highlight                   |
-| GET    | /highlights?url=        | Get all highlights for a URL           |
+| GET    | /highlights?url=        | Get all highlights for a URL; server resolves URL → page_id via JOIN on pages table |
 | POST   | /cards                  | Create a card (optionally from highlight) |
-| GET    | /cards                  | List all cards (with filters)          |
+| GET    | /cards                  | List cards; query params: `url`, `tag`, `date_from`, `date_to`, `q` (full-text keyword) |
 | GET    | /cards/:id              | Get a single card with chat history    |
 | PATCH  | /cards/:id              | Update my_note, tags, title            |
 | POST   | /cards/:id/chat         | Send a message to AI in card context   |
 | GET    | /cards/:id/export       | Export card as Markdown                |
 | GET    | /export                 | Export all cards as Markdown ZIP       |
+| GET    | /settings               | Get all settings (key-value pairs)     |
+| PATCH  | /settings               | Update settings (e.g. set API key)     |
 
-### 5.2 AI Integration
+### 5.2 Server Startup
 
-- Provider: OpenAI (configurable, user supplies API key via settings page)
+The local server must be running for the extension to function. v1 startup approach:
+- User runs `npm start` in the `server/` directory (documented in README)
+- A `start.sh` / `start.command` one-click script is provided for macOS
+- The extension SidePanel shows a warning banner if `localhost:7749` is unreachable
+
+### 5.3 AI Integration
+
+- Provider: OpenAI (configurable via Settings page — user enters API key stored in `settings` table)
 - For explanations: system prompt includes `pages.full_text` + highlight text
 - For card chat: system prompt includes full article + highlight + previous `chat_messages`
 - Streaming via SSE (`text/event-stream`) for all AI responses
+- If API key is not set, AI actions show a prompt directing user to Settings page
 
-### 5.3 Web UI (`localhost:7749`)
+### 5.4 Web UI (`localhost:7749`)
 
 **Layout:**
 ```
@@ -177,6 +216,8 @@ Per-card AI conversation history.
 - AI explanation section
 - Editable "我的看法" textarea (auto-saves on blur)
 - AI chat section: message thread + input box, full article context always included
+
+**Settings page:** accessible via sidebar link; fields for OpenAI API Key and model selection (e.g. gpt-4o).
 
 **Export:** single card → `.md` file; all cards → `.zip` of Markdown files
 
