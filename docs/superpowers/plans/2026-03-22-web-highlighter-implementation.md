@@ -1031,9 +1031,8 @@ import { Router } from 'express'
 import archiver from 'archiver'
 import { getCardById, getCards } from '../db/queries'
 
-const router = Router()
-
-function cardToMarkdown(card: any): string {
+// Shared helper — used by both routers below
+export function cardToMarkdown(card: any): string {
   const tags = JSON.parse(card.tags || '[]').map((t: string) => `#${t}`).join(' ')
   return `# ${card.title || 'Untitled'}
 
@@ -1055,8 +1054,9 @@ _Created: ${new Date(card.created_at).toISOString()}_
 `
 }
 
-// GET /cards/:id/export — single card Markdown
-router.get('/:id/export', (req, res) => {
+// Router A: handles GET /cards/:id/export — registered under /cards
+export const cardExportRouter = Router()
+cardExportRouter.get('/:id/export', (req, res) => {
   const card = getCardById(req.params.id)
   if (!card) return res.status(404).json({ error: 'Card not found' })
   const md = cardToMarkdown(card)
@@ -1066,8 +1066,9 @@ router.get('/:id/export', (req, res) => {
   res.send(md)
 })
 
-// GET /export — all cards as ZIP
-router.get('/', (_req, res) => {
+// Router B: handles GET / (all cards ZIP) — registered under /export
+export const allExportRouter = Router()
+allExportRouter.get('/', (_req, res) => {
   const cards = getCards()
   res.setHeader('Content-Type', 'application/zip')
   res.setHeader('Content-Disposition', 'attachment; filename="knowledge-base.zip"')
@@ -1080,19 +1081,19 @@ router.get('/', (_req, res) => {
   }
   archive.finalize()
 })
-
-export default router
 ```
 
 - [ ] **Step 2: Register in `index.ts`**
 
-Add to `server/src/index.ts`:
+Add to `server/src/index.ts` after existing route registrations:
 ```typescript
-import exportRouter from './routes/export'
+import { cardExportRouter, allExportRouter } from './routes/export'
 // ...
-app.use('/cards', exportRouter)  // /:id/export
-app.use('/export', exportRouter) // /export (all)
+app.use('/cards', cardExportRouter)   // GET /cards/:id/export
+app.use('/export', allExportRouter)   // GET /export (all cards ZIP)
 ```
+
+Note: Two separate router instances prevent Express from matching `/cards/` against the all-export route.
 
 - [ ] **Step 3: Smoke-test export**
 
