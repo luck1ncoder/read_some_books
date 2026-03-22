@@ -72,9 +72,10 @@ One row per selection made by the user.
 
 Example JSON stored in `position`:
 ```json
-{ "v": 1, "text": "划线的内容", "prefix": "前面50个字符", "suffix": "后面50个字符" }
+{ "v": 1, "text": "划线的内容", "prefix": "前面最多50个字符", "suffix": "后面最多50个字符" }
 ```
 `v` is a version field to support future anchor strategy migrations without breaking existing records.
+`prefix` / `suffix` are at most 50 chars — if the surrounding text is shorter, store whatever is available (no padding). Server validates on write; client truncates before sending.
 
 ### cards
 A knowledge card, optionally linked to a highlight.
@@ -164,7 +165,7 @@ Note: API key is stored in local SQLite (same trust boundary as the user's machi
 
 | Method | Path                    | Description                            |
 |--------|-------------------------|----------------------------------------|
-| POST   | /pages                  | Save or update a page's full content   |
+| POST   | /pages                  | Upsert a page by `url` (UNIQUE key); returns `{ id, created: bool }` — content-script uses returned `id` as `page_id` for subsequent highlight saves |
 | POST   | /highlights             | Save a new highlight                   |
 | GET    | /highlights?url=        | Get all highlights for a URL; server resolves URL → page_id via JOIN on pages table |
 | POST   | /cards                  | Create a card (optionally from highlight) |
