@@ -5,16 +5,24 @@ import { getDb } from './schema'
 
 export function upsertPage(data: { url: string; title: string; full_text: string }) {
   const db = getDb()
-  const existing = db.prepare('SELECT id FROM pages WHERE url = ?').get(data.url) as { id: string } | undefined
-  if (existing) {
-    db.prepare('UPDATE pages SET title = ?, full_text = ?, saved_at = ? WHERE id = ?')
-      .run(data.title, data.full_text, Date.now(), existing.id)
-    return { id: existing.id, created: false }
-  }
-  const id = uuid()
-  db.prepare('INSERT INTO pages (id, url, title, full_text, saved_at) VALUES (?, ?, ?, ?, ?)')
-    .run(id, data.url, data.title, data.full_text, Date.now())
-  return { id, created: true }
+  // Use INSERT ... ON CONFLICT for atomic upsert
+  const now = Date.now()
+  const tempId = uuid()
+
+  // Try to insert first
+  db.prepare(`
+    INSERT INTO pages (id, url, title, full_text, saved_at)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(url) DO UPDATE SET
+      title = excluded.title,
+      full_text = excluded.full_text,
+      saved_at = excluded.saved_at
+  `).run(tempId, data.url, data.title, data.full_text, now)
+
+  // Get the actual id (could be tempId if newly inserted, or existing id)
+  const row = db.prepare('SELECT id FROM pages WHERE url = ?').get(data.url) as { id: string }
+  const created = row.id === tempId
+  return { id: row.id, created }
 }
 
 export function getPageByUrl(url: string) {
