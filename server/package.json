@@ -5,7 +5,8 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:web": "npm run build --prefix web"
   },
   "dependencies": {
     "archiver": "^7.0.0",

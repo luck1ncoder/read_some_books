@@ -7,4 +7,14 @@ export default defineConfig({
     outDir: '../public',
     emptyOutDir: true,
   },
+  server: {
+    proxy: {
+      '/cards': 'http://localhost:7749',
+      '/pages': 'http://localhost:7749',
+      '/highlights': 'http://localhost:7749',
+      '/settings': 'http://localhost:7749',
+      '/export': 'http://localhost:7749',
+      '/ai': 'http://localhost:7749',
+    },
+  },
 })

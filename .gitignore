@@ -6,3 +6,9 @@ server/public/
 server/data.db
 *.zip
 .DS_Store
+.env
+.env.*
+.env.local
+.env.*.local
+*.log
+logs/
