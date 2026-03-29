@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
+import { getDomain } from './shared'
 
 export function CardItem({ card }: { card: any }) {
   const navigate = useNavigate()
   const tags: string[] = JSON.parse(card.tags || '[]')
   const preview = (card.ai_explanation || card.my_note || '').trim()
-  const domain = card.page_url ? (() => { try { return new URL(card.page_url).hostname.replace('www.', '') } catch { return card.page_url } })() : ''
+  const domain = card.page_url ? getDomain(card.page_url) : ''
   const dateStr = new Date(card.created_at).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 
   return (

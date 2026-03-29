@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:7749'
+export const BASE = 'http://localhost:7749'
 
 export async function getCards(filters: Record<string, string> = {}) {
   const params = new URLSearchParams(filters).toString()

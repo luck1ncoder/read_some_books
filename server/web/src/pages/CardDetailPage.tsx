@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getCard, updateCard, exportCardUrl } from '../api'
 import { ChatThread } from '../components/ChatThread'
+import { getDomain, sectionLabelStyle, tagBadgeStyle } from '../components/shared'
 
 export function CardDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -19,7 +20,7 @@ export function CardDetailPage() {
   )
 
   const tags: string[] = JSON.parse(card.tags || '[]')
-  const domain = card.page_url ? (() => { try { return new URL(card.page_url).hostname.replace('www.', '') } catch { return card.page_url } })() : ''
+  const domain = card.page_url ? getDomain(card.page_url) : ''
   const dateStr = new Date(card.created_at).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
 
   return (

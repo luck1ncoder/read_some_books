@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-
-const SERVER = 'http://localhost:7749'
+import { BASE } from '../api'
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
@@ -20,7 +19,7 @@ export function ChatThread({ cardId, initialMessages }: { cardId: string; initia
     setMessages(prev => [...prev, { role: 'user', content: userMsg }])
     setLoading(true)
 
-    const res = await fetch(`${SERVER}/cards/${cardId}/chat`, {
+    const res = await fetch(`${BASE}/cards/${cardId}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: userMsg }),

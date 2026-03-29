@@ -2,13 +2,13 @@ import { Router } from 'express'
 import { getCards, getTopics, bulkUpdateTopics, updateCard } from '../db/queries'
 import { getOpenAIClient, getOpenAIModel } from '../ai/client'
 import { buildClusterPrompt, buildAssignTopicPrompt } from '../ai/prompts'
+import { stripThinkTagsFromString } from '../ai/stream'
 
 const router = Router()
 
 // GET /cards/topics — returns existing topics grouped with their cards
 router.get('/topics', (req, res) => {
   const allCards = getCards()
-  // Group by topic
   const map = new Map<string, any[]>()
   for (const card of allCards) {
     const topic = card.topic || ''
@@ -16,12 +16,10 @@ router.get('/topics', (req, res) => {
     map.get(topic)!.push(card)
   }
   const groups: { name: string; cards: any[] }[] = []
-  // Named topics first, sorted by card count desc
   for (const [topic, cards] of map.entries()) {
     if (topic) groups.push({ name: topic, cards })
   }
   groups.sort((a, b) => b.cards.length - a.cards.length)
-  // Uncategorized last
   const uncategorized = map.get('') ?? []
   if (uncategorized.length > 0) groups.push({ name: '未分类', cards: uncategorized })
   res.json({ groups, total: allCards.length })
@@ -36,39 +34,28 @@ router.post('/cluster', async (req, res) => {
     const client = getOpenAIClient()
     const model = getOpenAIModel()
     const prompt = buildClusterPrompt(allCards.map(c => ({
-      id: c.id,
-      title: c.title,
-      ai_explanation: c.ai_explanation,
-      context_interpretation: c.context_interpretation,
+      id: c.id, title: c.title, ai_explanation: c.ai_explanation, context_interpretation: c.context_interpretation,
     })))
 
     const response = await client.chat.completions.create({
-      model,
-      stream: false,
+      model, stream: false,
       messages: [{ role: 'user', content: prompt }],
     })
 
     const raw = response.choices[0]?.message?.content ?? ''
-    const stripped = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+    const stripped = stripThinkTagsFromString(raw)
     const jsonStr = stripped.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
 
     let parsed: { groups: { name: string; card_ids: string[] }[] }
-    try {
-      parsed = JSON.parse(jsonStr)
-    } catch {
-      return res.status(500).json({ error: 'AI 返回格式错误', raw })
-    }
+    try { parsed = JSON.parse(jsonStr) }
+    catch { return res.status(500).json({ error: 'AI 返回格式错误', raw }) }
 
-    // Build assignments and persist
     const assignments: { id: string; topic: string }[] = []
     for (const g of parsed.groups) {
-      for (const id of g.card_ids) {
-        assignments.push({ id, topic: g.name })
-      }
+      for (const id of g.card_ids) assignments.push({ id, topic: g.name })
     }
     bulkUpdateTopics(assignments)
 
-    // Return grouped cards
     const cardMap = new Map(allCards.map(c => [c.id, c]))
     const groups = parsed.groups.map(g => ({
       name: g.name,
@@ -87,26 +74,21 @@ router.post('/:id/assign-topic', async (req, res) => {
   if (!card) return res.status(404).json({ error: 'Card not found' })
 
   const existingTopics = getTopics().map(t => t.topic)
-
-  // If no existing topics yet, skip incremental — caller should do full cluster
   if (existingTopics.length === 0) return res.json({ topic: '' })
 
   try {
     const client = getOpenAIClient()
     const model = getOpenAIModel()
     const prompt = buildAssignTopicPrompt({
-      title: card.title,
-      ai_explanation: card.ai_explanation,
-      context_interpretation: card.context_interpretation,
+      title: card.title, ai_explanation: card.ai_explanation, context_interpretation: card.context_interpretation,
     }, existingTopics)
 
     const response = await client.chat.completions.create({
-      model,
-      stream: false,
+      model, stream: false,
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const rawTopic = (response.choices[0]?.message?.content ?? '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+    const rawTopic = stripThinkTagsFromString(response.choices[0]?.message?.content ?? '')
     const topic = rawTopic.replace(/^["「]|["」]$/g, '')
     if (topic) updateCard(req.params.id, { topic })
     res.json({ topic })

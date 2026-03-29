@@ -4,14 +4,14 @@ import { getCards, getTopicGroups, reclusterCards, getPageDetail } from '../api'
 import { CardItem } from '../components/CardItem'
 import { ArticleView } from '../components/ArticleView'
 import { BookView } from '../components/BookView'
+import { getDomain } from '../components/shared'
 
 function groupBySite(cards: any[]) {
   const map = new Map<string, { domain: string; page_title: string; page_url: string; cards: any[] }>()
   for (const c of cards) {
     const key = c.page_url || '__no_url__'
     if (!map.has(key)) {
-      let domain = ''
-      try { domain = c.page_url ? new URL(c.page_url).hostname.replace('www.', '') : '未知来源' } catch { domain = c.page_url || '未知来源' }
+      const domain = c.page_url ? getDomain(c.page_url) : '未知来源'
       map.set(key, { domain, page_title: c.page_title || domain, page_url: c.page_url || '', cards: [] })
     }
     map.get(key)!.cards.push(c)

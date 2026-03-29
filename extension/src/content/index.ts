@@ -196,22 +196,9 @@ async function handleAction(action: string, text: string, anchor: Anchor) {
   if (action === 'annotate') {
     // Note: OPEN_SIDEPANEL_NOW was already sent synchronously in onmousedown,
     // before this async function was called. Gesture context is gone by now.
-    // Here we just save the highlight and tell the sidepanel which one to focus.
-    try {
-      const pageId = await ensurePageId()
-      if (!pageId) { showToast('无法获取页面，请刷新重试'); return }
-      const { id: hlId } = await bgFetch(`${SERVER}/highlights`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page_id: pageId, text, color: 'yellow', position: JSON.stringify(anchor) }),
-      })
-      renderHighlightMark(anchor)
-      // Tell background to forward FOCUS_HIGHLIGHT to the sidepanel.
-      chrome.runtime.sendMessage({ type: 'FOCUS_HIGHLIGHT', highlightId: hlId })
-      generateCardInBackground(pageId, hlId, text)
-    } catch {
-      showToast('保存失败，请重试')
-    }
+    const hlId = await saveHighlight(text, anchor)
+    if (hlId) chrome.runtime.sendMessage({ type: 'FOCUS_HIGHLIGHT', highlightId: hlId })
+    else showToast('保存失败，请重试')
   }
 }
 

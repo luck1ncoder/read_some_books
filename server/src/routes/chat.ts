@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { getCardById, getPageById, saveMessage } from '../db/queries'
 import { getOpenAIClient, getOpenAIModel } from '../ai/client'
 import { buildChatSystemPrompt } from '../ai/prompts'
+import { initSSE, streamCompletion } from '../ai/stream'
 
 const router = Router()
 
@@ -16,9 +17,7 @@ router.post('/:id/chat', async (req, res) => {
   const page = card.page_id ? getPageById(card.page_id) : null
   saveMessage({ card_id: card.id, role: 'user', content: message })
 
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
+  initSSE(res)
 
   try {
     const client = getOpenAIClient()
@@ -39,40 +38,7 @@ router.post('/:id/chat', async (req, res) => {
       ],
     })
 
-    let fullContent = ''
-    let buffer = ''
-    let inThink = false
-    for await (const chunk of stream) {
-      const raw = chunk.choices[0]?.delta?.content ?? ''
-      if (!raw) continue
-      buffer += raw
-      while (true) {
-        if (inThink) {
-          const endIdx = buffer.indexOf('</think>')
-          if (endIdx === -1) break
-          buffer = buffer.slice(endIdx + 8)
-          inThink = false
-        } else {
-          const startIdx = buffer.indexOf('<think>')
-          if (startIdx === -1) {
-            if (buffer) {
-              fullContent += buffer
-              res.write(`data: ${JSON.stringify({ delta: buffer })}\n\n`)
-            }
-            buffer = ''
-            break
-          } else {
-            if (startIdx > 0) {
-              fullContent += buffer.slice(0, startIdx)
-              res.write(`data: ${JSON.stringify({ delta: buffer.slice(0, startIdx) })}\n\n`)
-            }
-            buffer = buffer.slice(startIdx + 7)
-            inThink = true
-          }
-        }
-      }
-    }
-    if (buffer && !inThink) { fullContent += buffer; res.write(`data: ${JSON.stringify({ delta: buffer })}\n\n`) }
+    const fullContent = await streamCompletion(res, stream)
     saveMessage({ card_id: card.id, role: 'assistant', content: fullContent })
     res.write('data: [DONE]\n\n')
     res.end()
