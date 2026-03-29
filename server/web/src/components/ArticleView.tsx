@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getPageDetail, getHighlightMessages } from '../api'
-import { Highlight, HighlightedText, findHighlightsInText, StatsBar, MessageList } from './shared'
+import { Highlight, HighlightedText, findHighlightsInText, StatsBar, MessageList, getDomain } from './shared'
+import { DocNode, BookNode, AnnotPopover } from './BookView'
 
 function AnnotationPanel({ highlight, open }: { highlight: Highlight; open: boolean }) {
   const [messages, setMessages] = useState<any[]>([])
@@ -42,7 +43,98 @@ function splitParagraphs(text: string): string[] {
   return text.split(/\n+/).map(p => p.trim()).filter(p => p.length > 0)
 }
 
-export function ArticleView({ pageId }: { pageId: string }) {
+// ── Structured scroll view: uses doc_structure with BookNode for rich rendering ──
+
+function StructuredScrollView({ page }: { page: any }) {
+  const [openHighlightId, setOpenHighlightId] = useState<string | null>(null)
+  const [openHighlight, setOpenHighlight] = useState<Highlight | null>(null)
+
+  const highlights: Highlight[] = page.highlights ?? []
+  let nodes: DocNode[] = []
+  try { nodes = page.doc_structure ? JSON.parse(page.doc_structure) : [] } catch { nodes = [] }
+
+  const highlightCount = highlights.length
+  const annotationCount = highlights.filter(h => h.message_count > 0).length
+
+  function handleHighlightClick(h: Highlight) {
+    if (openHighlightId === h.id) { setOpenHighlightId(null); setOpenHighlight(null) }
+    else { setOpenHighlightId(h.id); setOpenHighlight(h) }
+  }
+
+  return (
+    <div>
+      {/* Stats */}
+      {highlightCount > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '0 0 16px', fontSize: 12, color: '#9aa3ab',
+        }}>
+          <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'rgba(251,211,62,0.7)' }} />
+          {highlightCount} 处划线
+          {annotationCount > 0 && (
+            <>
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'rgba(167,139,250,0.7)', marginLeft: 6 }} />
+              {annotationCount} 处批注
+              <span style={{ color: '#d1d5db' }}>· 点击高亮查看</span>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Scroll content */}
+      <div style={{
+        background: '#fffef9', borderRadius: 12, padding: '48px 56px 56px',
+        boxShadow: '0 1px 6px rgba(45,51,56,0.06)',
+        fontFamily: "'Georgia', 'Noto Serif SC', 'Source Han Serif SC', serif",
+        position: 'relative',
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginBottom: 32, paddingBottom: 10,
+          borderBottom: '1px solid rgba(0,0,0,0.07)',
+        }}>
+          <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#b0a693' }}>
+            {getDomain(page.url)}
+          </span>
+          <span style={{ fontSize: 10, color: '#b0a693', letterSpacing: '0.06em' }}>
+            {new Date(page.saved_at).toLocaleDateString('zh-CN')}
+          </span>
+        </div>
+
+        {/* Content nodes */}
+        {nodes.map((node, idx) => (
+          <div key={idx} style={{ position: 'relative' }}>
+            <BookNode node={node} highlights={highlights} onHighlightClick={handleHighlightClick} openHighlightId={openHighlightId} />
+            {openHighlight && node.text && node.text.includes(openHighlight.text.slice(0, 80)) && (
+              <AnnotPopover highlight={openHighlight} onClose={() => { setOpenHighlightId(null); setOpenHighlight(null) }} />
+            )}
+          </div>
+        ))}
+
+        {/* Footer */}
+        <div style={{
+          marginTop: 40, paddingTop: 14,
+          borderTop: '1px solid rgba(0,0,0,0.07)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span style={{ fontSize: 11, color: '#b0a693' }}>
+            {highlightCount > 0 ? `${highlightCount} 处划线` : ''}
+          </span>
+          <a href={page.url} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: '#b0a693', textDecoration: 'none' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#7a6e5e')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#b0a693')}>
+            查看原文 →
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── ArticleView ──────────────────────────────────────────────────────────────
+
+export function ArticleView({ pageId, showFullContent = false }: { pageId: string; showFullContent?: boolean }) {
   const [page, setPage] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [openHighlightId, setOpenHighlightId] = useState<string | null>(null)
@@ -63,6 +155,15 @@ export function ArticleView({ pageId }: { pageId: string }) {
 
   if (!page) return null
 
+  // When showFullContent is true and doc_structure is available, use structured scroll view
+  if (showFullContent) {
+    let hasDocStructure = false
+    try { hasDocStructure = page.doc_structure && JSON.parse(page.doc_structure).length > 0 } catch {}
+    if (hasDocStructure) {
+      return <StructuredScrollView page={page} />
+    }
+  }
+
   const highlights: Highlight[] = page.highlights ?? []
   const paragraphs = splitParagraphs(page.full_text ?? '')
 
@@ -80,7 +181,7 @@ export function ArticleView({ pageId }: { pageId: string }) {
     }
   }
 
-  const showAll = hlParaIndices.size === 0
+  const showAll = showFullContent || hlParaIndices.size === 0
   const indicesToShow = showAll ? paragraphs.map((_, i) => i) : Array.from(hlParaIndices).sort((a, b) => a - b)
 
   const highlightCount = highlights.length
@@ -121,7 +222,7 @@ export function ArticleView({ pageId }: { pageId: string }) {
             : <span style={{ fontSize: 10, color: '#e2e4e9', fontVariantNumeric: 'tabular-nums' }}>{idx + 1}</span>}
         </div>
         <div style={{ flex: 1, padding: '12px 16px 12px 4px', fontSize: 14, lineHeight: 1.75, color: hasHighlight ? '#2d3338' : '#bcc1c6', minWidth: 0 }}>
-          <HighlightedText text={para} highlights={paraHighlights} />
+          <HighlightedText text={para} highlights={paraHighlights} showAnnotationColor openHighlightId={openHighlightId} />
         </div>
         {hasHighlight && openHl && <AnnotationPanel highlight={openHl} open={isOpen} />}
       </div>

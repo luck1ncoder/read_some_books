@@ -2,15 +2,15 @@ import { useState, useEffect, useRef } from 'react'
 import { getPageDetail, getHighlightMessages } from '../api'
 import { Highlight, HighlightedText, findHighlightsInText, StatsBar, MessageList, getDomain } from './shared'
 
-interface DocNode {
-  type: 'h1' | 'h2' | 'h3' | 'p' | 'blockquote' | 'img' | 'li'
+export interface DocNode {
+  type: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'blockquote' | 'img' | 'li' | 'pre' | 'table' | 'hr'
   text?: string
   src?: string
   alt?: string
 }
 
-// Annotation popover panel
-function AnnotPopover({ highlight, onClose }: { highlight: Highlight; onClose: () => void }) {
+// Annotation popover panel — exported for BookReader reuse
+export function AnnotPopover({ highlight, onClose }: { highlight: Highlight; onClose: () => void }) {
   const [messages, setMessages] = useState<any[]>([])
   const [loaded, setLoaded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -58,8 +58,8 @@ function AnnotPopover({ highlight, onClose }: { highlight: Highlight; onClose: (
   )
 }
 
-// Single renderable node with highlight support
-function BookNode({ node, highlights, onHighlightClick, openHighlightId }: {
+// Single renderable node with highlight support — exported for BookReader reuse
+export function BookNode({ node, highlights, onHighlightClick, openHighlightId }: {
   node: DocNode; highlights: Highlight[]; onHighlightClick: (h: Highlight) => void; openHighlightId: string | null
 }) {
   const text = node.text ?? ''
@@ -76,10 +76,33 @@ function BookNode({ node, highlights, onHighlightClick, openHighlightId }: {
       return <div style={{ fontSize: 16, fontWeight: 700, color: '#2d2820', marginTop: 32, marginBottom: 10, letterSpacing: '-0.1px' }}>{inner}</div>
     case 'h3':
       return <div style={{ fontSize: 14, fontWeight: 600, color: '#3d3628', marginTop: 20, marginBottom: 8 }}>{inner}</div>
+    case 'h4':
+      return <div style={{ fontSize: 13, fontWeight: 600, color: '#4a4238', marginTop: 16, marginBottom: 6 }}>{inner}</div>
+    case 'h5':
+    case 'h6':
+      return <div style={{ fontSize: 12, fontWeight: 600, color: '#5c5346', marginTop: 14, marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{inner}</div>
     case 'blockquote':
       return <div style={{ borderLeft: '3px solid #d4c9b0', margin: '20px 0', padding: '10px 18px', color: '#5c5346', fontStyle: 'italic', fontSize: 15, lineHeight: 1.75, background: 'rgba(212,201,176,0.12)', borderRadius: '0 6px 6px 0' }}>{inner}</div>
     case 'li':
       return <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}><span style={{ color: '#b0a693', flexShrink: 0, marginTop: 2 }}>·</span><span style={{ fontSize: 15, lineHeight: 1.8, color: '#3d3628' }}>{inner}</span></div>
+    case 'pre':
+      return (
+        <pre style={{ margin: '16px 0', padding: '14px 16px', background: 'rgba(45,40,32,0.04)', border: '1px solid rgba(45,40,32,0.08)', borderRadius: 6, fontSize: 12.5, lineHeight: 1.65, color: '#3d3628', overflow: 'auto', fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+          {text}
+        </pre>
+      )
+    case 'table':
+      return (
+        <div style={{ margin: '16px 0', padding: '12px 14px', background: 'rgba(45,40,32,0.03)', border: '1px solid rgba(45,40,32,0.08)', borderRadius: 6, fontSize: 13, lineHeight: 1.7, color: '#3d3628', overflow: 'auto' }}>
+          {(text).split('\n').map((row, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, padding: '3px 0', borderBottom: i === 0 ? '1px solid rgba(45,40,32,0.1)' : 'none', fontWeight: i === 0 ? 600 : 400 }}>
+              {row.split(' | ').map((cell, j) => <span key={j} style={{ flex: 1, minWidth: 0 }}>{cell}</span>)}
+            </div>
+          ))}
+        </div>
+      )
+    case 'hr':
+      return <hr style={{ border: 'none', borderTop: '1px solid rgba(45,40,32,0.1)', margin: '28px 0' }} />
     case 'img':
       return (
         <div style={{ margin: '24px -8px', textAlign: 'center' }}>
@@ -124,7 +147,11 @@ export function BookView({ pageId }: { pageId: string }) {
   try { nodes = page.doc_structure ? JSON.parse(page.doc_structure) : [] } catch { nodes = [] }
   if (nodes.length === 0) return null
 
-  const chapters = nodes.map((n, i) => n.type === 'h2' ? { idx: i, title: n.text ?? '' } : null).filter(Boolean) as { idx: number; title: string }[]
+  // Build chapter list: prefer h2, fall back to h3 if no h2s exist
+  const h2Chapters = nodes.map((n, i) => n.type === 'h2' ? { idx: i, title: n.text ?? '' } : null).filter(Boolean) as { idx: number; title: string }[]
+  const chapters = h2Chapters.length > 0
+    ? h2Chapters
+    : (nodes.map((n, i) => n.type === 'h3' ? { idx: i, title: n.text ?? '' } : null).filter(Boolean) as { idx: number; title: string }[])
   const h1Node = nodes.find(n => n.type === 'h1')
   const highlightCount = highlights.length
   const annotationCount = highlights.filter(h => h.message_count > 0).length

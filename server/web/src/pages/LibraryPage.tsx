@@ -4,6 +4,7 @@ import { getCards, getTopicGroups, reclusterCards, getPageDetail } from '../api'
 import { CardItem } from '../components/CardItem'
 import { ArticleView } from '../components/ArticleView'
 import { BookView } from '../components/BookView'
+import { Bookshelf } from '../components/Bookshelf'
 import { getDomain } from '../components/shared'
 
 function groupBySite(cards: any[]) {
@@ -256,10 +257,9 @@ export function LibraryPage() {
         <h1 style={{ fontSize: 36, fontWeight: 600, color: '#2d3338', margin: '0 0 10px', letterSpacing: '-0.8px', lineHeight: 1.15 }}>
           {q ? `"${q}"` : isSiteView ? '按来源' : isTopicView ? '按话题' : '全部卡片'}
         </h1>
-        {!loading && !isTopicView && (
+        {!loading && !isTopicView && !isSiteView && (
           <p style={{ fontSize: 14, color: '#596065', margin: 0 }}>
             共 {cards.length} 张知识卡片
-            {isSiteView && cards.length > 0 ? `，来自 ${groupBySite(cards).length} 个来源` : ''}
           </p>
         )}
         {isTopicView && (
@@ -279,8 +279,7 @@ export function LibraryPage() {
           </p>
         </div>
       ) : isSiteView ? (
-        <SiteView cards={cards} />
-      
+        <Bookshelf />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {cards.map(c => <CardItem key={c.id} card={c} />)}

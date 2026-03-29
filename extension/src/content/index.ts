@@ -349,7 +349,7 @@ function exitHighlightMode() {
 // ── Doc structure extraction ──────────────────────────────────────────────────
 
 interface DocNode {
-  type: 'h1' | 'h2' | 'h3' | 'p' | 'blockquote' | 'img' | 'li'
+  type: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'blockquote' | 'img' | 'li' | 'pre' | 'table' | 'hr'
   text?: string
   src?: string
   alt?: string
@@ -359,23 +359,23 @@ function extractDocStructure(): DocNode[] {
   const nodes: DocNode[] = []
 
   // Selectors to skip — noise elements
-  const SKIP_SELECTOR = 'nav, footer, aside, header, [role="navigation"], [role="banner"], [role="complementary"], [role="dialog"], script, style, noscript, iframe, .sidebar, .menu, .ad, .cookie, .popup, .modal, .overlay'
+  const SKIP_SELECTOR = 'nav, footer, aside, header, [role="navigation"], [role="banner"], [role="complementary"], [role="dialog"], script, style, noscript, iframe, .sidebar, .menu, .ad, .cookie, .popup, .modal, .overlay, .toc, .table-of-contents, .share, .social, .related, .comments'
 
   // Find best root: prefer article > [role=main] > main > body
   const root: Element =
     document.querySelector('article') ??
     document.querySelector('[role="main"]') ??
     document.querySelector('main') ??
-    document.querySelector('.content, .article, .post, .entry, #content, #main, #article') ??
+    document.querySelector('.content, .article, .post, .entry, .post-content, .article-content, .entry-content, .markdown-body, #content, #main, #article') ??
     document.body
 
-  const els = root.querySelectorAll('h1, h2, h3, p, blockquote, img, li')
+  const els = root.querySelectorAll('h1, h2, h3, h4, h5, h6, p, blockquote, img, li, pre, table, hr')
 
   // Track text seen to deduplicate (parent text often contains child text)
   const seenTexts = new Set<string>()
 
   for (const el of Array.from(els)) {
-    const tag = el.tagName.toLowerCase()
+    let tag = el.tagName.toLowerCase()
 
     // Skip noise containers
     if (el.closest(SKIP_SELECTOR)) continue
@@ -384,9 +384,15 @@ function extractDocStructure(): DocNode[] {
     const style = window.getComputedStyle(el)
     if (style.display === 'none' || style.visibility === 'hidden') continue
 
+    // Horizontal rule — visual separator
+    if (tag === 'hr') {
+      nodes.push({ type: 'hr' })
+      continue
+    }
+
     if (tag === 'img') {
       const img = el as HTMLImageElement
-      const src = img.src || img.dataset.src || img.getAttribute('data-lazy-src') || ''
+      const src = img.src || img.dataset.src || img.getAttribute('data-lazy-src') || img.getAttribute('data-original') || img.getAttribute('data-lazy') || ''
       const alt = img.alt ?? ''
       if (src && !src.startsWith('data:') && src.length < 600) {
         nodes.push({ type: 'img', src, alt })
@@ -394,18 +400,46 @@ function extractDocStructure(): DocNode[] {
       continue
     }
 
+    // Table — extract as formatted text
+    if (tag === 'table') {
+      const rows = el.querySelectorAll('tr')
+      const lines: string[] = []
+      rows.forEach(row => {
+        const cells = Array.from(row.querySelectorAll('th, td')).map(c => (c.textContent ?? '').replace(/\s+/g, ' ').trim())
+        if (cells.some(c => c.length > 0)) lines.push(cells.join(' | '))
+      })
+      const text = lines.join('\n')
+      if (text.length > 10 && !seenTexts.has(text)) {
+        seenTexts.add(text)
+        nodes.push({ type: 'table', text })
+      }
+      continue
+    }
+
+    // Code blocks — preserve formatting
+    if (tag === 'pre') {
+      const text = (el.textContent ?? '').trim()
+      if (text.length >= 5 && !seenTexts.has(text)) {
+        seenTexts.add(text)
+        nodes.push({ type: 'pre', text })
+      }
+      continue
+    }
+
     const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim()
     if (!text || text.length < 5) continue
 
-    // Skip if this text is contained within an already captured ancestor's text
-    // (avoids duplicating parent <p> that wraps <li> children etc.)
-    if (tag === 'p' || tag === 'blockquote') {
-      // Only skip if exact duplicate
-      if (seenTexts.has(text)) continue
+    // Skip nested li: only take direct-child li of ol/ul, not deeply nested ones
+    if (tag === 'li') {
+      const parentList = el.parentElement
+      if (parentList && parentList.closest('li')) continue  // nested list item
+      if (text.length > 300) continue  // likely nav menu
     }
 
-    // Skip very long li items that are likely nav menu entries repeated
-    if (tag === 'li' && text.length > 300) continue
+    // Skip if exact duplicate (p and blockquote especially prone)
+    if (tag === 'p' || tag === 'blockquote' || tag === 'li') {
+      if (seenTexts.has(text)) continue
+    }
 
     seenTexts.add(text)
     nodes.push({ type: tag as DocNode['type'], text })
@@ -413,13 +447,13 @@ function extractDocStructure(): DocNode[] {
 
   // If we got almost nothing from the structured approach,
   // fall back to splitting full_text by lines
-  if (nodes.filter(n => n.type !== 'img').length < 3) {
+  if (nodes.filter(n => n.type !== 'img' && n.type !== 'hr').length < 3) {
     const lines = document.body.innerText
       .split('\n')
       .map(l => l.trim())
       .filter(l => l.length > 20)
       .slice(0, 200)
-    return lines.map(text => ({ type: 'p', text }))
+    return lines.map(text => ({ type: 'p' as const, text }))
   }
 
   return nodes
