@@ -81,7 +81,7 @@ export function createCard(data: {
 
 export function getCards(filters: { url?: string; tag?: string; date_from?: number; date_to?: number; q?: string } = {}) {
   const db = getDb()
-  let sql = `SELECT c.*, p.url as page_url, p.title as page_title FROM cards c LEFT JOIN pages p ON c.page_id = p.id WHERE 1=1`
+  let sql = `SELECT c.*, p.url as page_url, p.title as page_title, h.text as highlight_text FROM cards c LEFT JOIN pages p ON c.page_id = p.id LEFT JOIN highlights h ON c.highlight_id = h.id WHERE 1=1`
   const params: any[] = []
   if (filters.url) { sql += ' AND p.url = ?'; params.push(filters.url) }
   if (filters.tag) { sql += ' AND c.tags LIKE ?'; params.push(`%"${filters.tag}"%`) }

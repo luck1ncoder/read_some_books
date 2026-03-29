@@ -3,6 +3,7 @@ import { getCards, getPageDetail } from '../api'
 import { getDomain } from './shared'
 import { BookReader } from './BookReader'
 import { ArticleView } from './ArticleView'
+import { CardFeedView } from './CardFeedView'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -159,7 +160,7 @@ export function Bookshelf() {
   const [openBook, setOpenBook] = useState<BookInfo | null>(null)
   const [animPhase, setAnimPhase] = useState<'shelf' | 'opening' | 'reading' | 'closing'>('shelf')
   const [flyStyle, setFlyStyle] = useState<React.CSSProperties>({})
-  const [readMode, setReadMode] = useState<'book' | 'scroll'>('book')
+  const [readMode, setReadMode] = useState<'book' | 'scroll' | 'cards'>('book')
   const [fullscreen, setFullscreen] = useState(false)
   const coverRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const fullscreenRef = useRef<HTMLDivElement>(null)
@@ -489,6 +490,20 @@ export function Bookshelf() {
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
                   </svg>
                 </button>
+                <button
+                  onClick={() => setReadMode('cards')}
+                  title="精华卡片"
+                  style={{
+                    ...toolBtnStyle,
+                    background: readMode === 'cards' ? '#e8e4de' : 'transparent',
+                    color: readMode === 'cards' ? '#4a4540' : '#b0a99e',
+                    borderLeft: '1px solid #e0ddd8',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
+                  </svg>
+                </button>
               </div>
 
               {/* Fullscreen toggle */}
@@ -522,8 +537,10 @@ export function Bookshelf() {
               pageId={openBook.pageId}
               mode={openBook.mode}
             />
-          ) : (
+          ) : readMode === 'scroll' ? (
             <ArticleView pageId={openBook.pageId} showFullContent />
+          ) : (
+            <CardFeedView pageUrl={openBook.pageUrl} pageTitle={openBook.pageTitle} />
           )}
         </div>
       )}
