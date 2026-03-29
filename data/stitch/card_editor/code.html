@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atelier | Create Page</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed": "#dcd2f4",
+              "on-surface": "#2d3338",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-highest": "#dde3e9",
+              "surface": "#f9f9fb",
+              "on-secondary-fixed-variant": "#5b5b60",
+              "surface-container": "#ebeef2",
+              "on-surface-variant": "#596065",
+              "on-secondary-container": "#515156",
+              "surface-dim": "#d3dbe2",
+              "outline-variant": "#acb3b8",
+              "surface-variant": "#dde3e9",
+              "on-error": "#fff7f6",
+              "on-secondary": "#faf8fe",
+              "on-primary-container": "#525154",
+              "tertiary-container": "#dcd2f4",
+              "on-tertiary-fixed-variant": "#57506c",
+              "primary-fixed": "#e4e2e4",
+              "surface-container-low": "#f2f4f6",
+              "inverse-surface": "#0c0e10",
+              "on-primary-fixed": "#3f3f41",
+              "on-background": "#2d3338",
+              "inverse-primary": "#ffffff",
+              "primary": "#5f5e60",
+              "on-tertiary-fixed": "#3a344e",
+              "tertiary-dim": "#564f6b",
+              "on-secondary-fixed": "#3e3f43",
+              "tertiary-fixed-dim": "#cec5e5",
+              "on-primary": "#faf7f9",
+              "secondary-fixed": "#e3e2e7",
+              "secondary-container": "#e3e2e7",
+              "primary-fixed-dim": "#d6d3d6",
+              "primary-dim": "#535254",
+              "surface-container-high": "#e4e9ee",
+              "outline": "#757c81",
+              "secondary-fixed-dim": "#d5d4d9",
+              "tertiary": "#625b77",
+              "secondary-dim": "#525357",
+              "surface-tint": "#5f5e60",
+              "surface-bright": "#f9f9fb",
+              "background": "#f9f9fb",
+              "inverse-on-surface": "#9c9d9f",
+              "error": "#9f403d",
+              "on-primary-fixed-variant": "#5c5b5d",
+              "on-tertiary": "#fdf7ff",
+              "primary-container": "#e4e2e4",
+              "on-error-container": "#752121",
+              "secondary": "#5e5f63",
+              "error-dim": "#4e0309",
+              "error-container": "#fe8983",
+              "on-tertiary-container": "#4d4762"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .editor-container {
+            max-width: 720px;
+        }
+        /* Custom scrollbar for refined UI */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ebeef2; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #dde3e9; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 sticky bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-3 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-lg font-semibold tracking-tighter text-zinc-900 dark:text-zinc-50">Atelier</span>
+<nav class="hidden md:flex items-center space-x-6 font-sans text-sm font-medium tracking-tight">
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors duration-200" href="#">Drafts</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors duration-200" href="#">Shared</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors duration-200" href="#">Private</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Portrait of a young professional woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmU_voco762xxs3JuwVbOtD-YwdalYoHw1qT5FyBPMSWqWaEHDi_XPCsb8yTUK6lKi6MQr9GpOQSs_89XQs61JC3eDfIo-M0M3V1gw92ZqWfYKjm6KUr-VWzNFS-V2bezr8Dxa_oHCELmuumzhrStAaYDK9RumYpQL6gc0vQfrc2X1pkPUDroQvJ4oO3OS1B7WAVu1AT4tGqQTeQYEgiGEEPK5nRz73ThWEAC5Brepm2bBcvn-UGsQDHEnhnL4Qp8uUnNZh2MoP4s"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex h-screen pt-14">
+<!-- SideNavBar (Hidden on Mobile, but conceptually here) -->
+<aside class="hidden lg:flex flex-col h-full w-64 p-4 space-y-2 bg-zinc-50 dark:bg-zinc-950 border-r border-zinc-200/50 dark:border-zinc-800/50">
+<div class="px-3 py-4 flex flex-col gap-1">
+<span class="text-sm font-bold uppercase tracking-widest text-zinc-400">The Atelier</span>
+<span class="text-[13px] leading-relaxed text-zinc-500">Personal Workspace</span>
+</div>
+<button class="flex items-center gap-3 w-full px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[13px] font-medium">Home</span>
+</button>
+<button class="flex items-center gap-3 w-full px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 font-medium rounded-lg shadow-sm">
+<span class="material-symbols-outlined">description</span>
+<span class="text-[13px] font-medium">All Pages</span>
+</button>
+<button class="flex items-center gap-3 w-full px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-[13px] font-medium">Library</span>
+</button>
+<div class="mt-auto pt-4 space-y-1">
+<button class="flex items-center gap-3 w-full px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="text-[13px] font-medium">Help</span>
+</button>
+<button class="flex items-center gap-3 w-full px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg">
+<span class="material-symbols-outlined">delete</span>
+<span class="text-[13px] font-medium">Trash</span>
+</button>
+</div>
+</aside>
+<!-- Main Editor Canvas -->
+<section class="flex-1 bg-surface-container-lowest overflow-y-auto relative">
+<!-- Focused Writing Canvas -->
+<div class="editor-container mx-auto px-8 pt-24 pb-40">
+<!-- Title Area -->
+<div class="mb-12">
+<textarea class="w-full text-[3.5rem] font-bold tracking-tight text-on-surface placeholder-surface-container-highest border-none focus:ring-0 resize-none bg-transparent leading-tight" placeholder="Untitled Node" rows="1"></textarea>
+</div>
+<!-- Block Editor Emulation -->
+<div class="space-y-8 text-lg text-on-surface leading-relaxed">
+<div class="group relative">
+<p class="outline-none focus:ring-0 whitespace-pre-wrap" contenteditable="true">
+                            Start writing your masterpiece... Every word matters. In the Digital Atelier, we believe that clarity of space leads to clarity of mind. 
+                        </p>
+<div class="absolute -left-10 top-1 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1 text-surface-container-highest">
+<span class="material-symbols-outlined cursor-grab">drag_indicator</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-on-surface-variant">add</span>
+</div>
+</div>
+<div class="group relative bg-surface-container-low p-6 rounded-xl border-l-4 border-primary/20">
+<p class="italic text-on-surface-variant outline-none" contenteditable="true">
+                            "Design is not just what it looks like and feels like. Design is how it works."
+                        </p>
+<p class="text-sm mt-2 font-medium">— Steve Jobs</p>
+</div>
+<div class="group relative">
+<p class="outline-none focus:ring-0" contenteditable="true">
+                            In this environment, we prioritize depth over breadth. Use the right sidebar to categorize this node once the thought is fully formed.
+                        </p>
+</div>
+<div class="relative group h-64 w-full bg-surface-container rounded-xl overflow-hidden mt-8">
+<img alt="Workspace" class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" data-alt="Minimalist modern office space with large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtuEqRIRDjEQAIDyBk0S4EEbbs8Q6qNy5OU4J2I0olX_iyOxZVS30hxRCaTpJDBzZoQPuMgQGXj9TmEfFcFty3RquTPIo8BxD4SkmrKP3H_DVRoq-kklAz55HoE25jQxnjhDkzPWgNAwEE5W8wM2xJU0E-sOx4jl98tpVbvuiDo0mBpTNewDqW_dWI0pTErZf_Z6gp5vxRUUTmLVLZawTWIuTmftTmIeCDM6rTIG3E5gqaKjicYnpPR60XyThK-YRKIwdZSJKDODs"/>
+<div class="absolute bottom-4 right-4 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-medium text-on-surface-variant">
+                            Caption: Minimalist Studio Layout
+                        </div>
+</div>
+</div>
+</div>
+<!-- Floating Formatting Bar (Contextual) -->
+<div class="fixed bottom-12 left-1/2 -translate-x-1/2 flex items-center bg-white/90 backdrop-blur-xl px-2 py-1.5 rounded-full shadow-2xl border border-surface-container-highest z-50">
+<div class="flex items-center gap-1 border-r border-surface-container px-2 mr-2">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">format_bold</span></button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">format_italic</span></button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">format_underlined</span></button>
+</div>
+<div class="flex items-center gap-1 border-r border-surface-container px-2 mr-2">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">format_quote</span></button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">link</span></button>
+</div>
+<div class="flex items-center gap-1 px-2">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">image</span></button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">code</span></button>
+</div>
+</div>
+</section>
+<!-- Right Sidebar (Settings) -->
+<aside class="w-80 h-full bg-surface border-l border-zinc-200/50 dark:border-zinc-800/50 overflow-y-auto flex flex-col p-6">
+<div class="flex items-center justify-between mb-8">
+<span class="text-sm font-semibold tracking-tight text-on-surface">Card Settings</span>
+<button class="p-1 hover:bg-surface-container-low rounded-md"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="space-y-8">
+<!-- Status & Publishing -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between text-[13px] text-on-surface-variant font-medium">
+<span>Status</span>
+<span class="text-primary">Draft</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="px-4 py-2.5 bg-surface-container-highest text-on-surface font-medium text-sm rounded-xl hover:bg-surface-dim transition-colors">
+                            Save
+                        </button>
+<button class="px-4 py-2.5 bg-gradient-to-b from-primary to-primary-dim text-on-primary font-medium text-sm rounded-xl shadow-sm hover:opacity-90 transition-all">
+                            Publish
+                        </button>
+</div>
+</div>
+<!-- Hierarchy -->
+<div class="space-y-3">
+<label class="text-[12px] font-bold uppercase tracking-widest text-on-surface-variant">Parent Category</label>
+<div class="relative">
+<button class="w-full flex items-center justify-between px-4 py-3 bg-surface-container-lowest rounded-xl text-sm text-on-surface-variant border border-outline-variant/20 hover:border-outline-variant/40 transition-all">
+<span>Design Philosophy</span>
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Tags -->
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-[12px] font-bold uppercase tracking-widest text-on-surface-variant">Tags</label>
+<button class="text-[11px] font-semibold text-primary hover:underline">Add New</button>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] font-medium rounded-full flex items-center gap-1.5">
+                            Project X <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-[12px] font-medium rounded-full flex items-center gap-1.5">
+                            Q3 Goals <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</span>
+</div>
+</div>
+<!-- Permissions -->
+<div class="space-y-4 pt-4 border-t border-surface-container">
+<label class="text-[12px] font-bold uppercase tracking-widest text-on-surface-variant">Access</label>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">JD</div>
+<div class="flex flex-col">
+<span class="text-[13px] font-medium leading-tight">Jane Doe</span>
+<span class="text-[11px] text-on-surface-variant">Owner</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container text-xs font-bold">MS</div>
+<div class="flex flex-col">
+<span class="text-[13px] font-medium leading-tight">Marcus Smith</span>
+<span class="text-[11px] text-on-surface-variant">Editor</span>
+</div>
+</div>
+<button class="w-full py-2 flex items-center justify-center gap-2 text-primary text-sm font-medium hover:bg-surface-container-low rounded-xl transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_circle</span> Invite Collaborators
+                    </button>
+</div>
+<!-- Metadata -->
+<div class="pt-4 border-t border-surface-container text-[11px] text-on-surface-variant/60 leading-relaxed">
+<p>Last edited 2 minutes ago</p>
+<p>Word count: 342</p>
+<p>Reading time: 2 mins</p>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

@@ -29,6 +29,9 @@ export function initDb(path: string = './data.db') {
       page_id TEXT REFERENCES pages(id),
       title TEXT NOT NULL DEFAULT '',
       ai_explanation TEXT NOT NULL DEFAULT '',
+      context_interpretation TEXT NOT NULL DEFAULT '',
+      inferred_intent TEXT NOT NULL DEFAULT '',
+      topic TEXT NOT NULL DEFAULT '',
       my_note TEXT NOT NULL DEFAULT '',
       tags TEXT NOT NULL DEFAULT '[]',
       created_at INTEGER NOT NULL,
@@ -43,11 +46,36 @@ export function initDb(path: string = './data.db') {
       created_at INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS highlight_messages (
+      id TEXT PRIMARY KEY,
+      highlight_id TEXT NOT NULL REFERENCES highlights(id),
+      role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
+      content TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL DEFAULT ''
     );
   `)
+
+  // Migration: add new columns to existing DBs (SQLite has no ADD COLUMN IF NOT EXISTS)
+  const existingPageCols = (db.prepare(`PRAGMA table_info(pages)`).all() as any[]).map(r => r.name)
+  if (!existingPageCols.includes('doc_structure')) {
+    db.exec(`ALTER TABLE pages ADD COLUMN doc_structure TEXT NOT NULL DEFAULT ''`)
+  }
+
+  const existingCols = (db.prepare(`PRAGMA table_info(cards)`).all() as any[]).map(r => r.name)
+  if (!existingCols.includes('context_interpretation')) {
+    db.exec(`ALTER TABLE cards ADD COLUMN context_interpretation TEXT NOT NULL DEFAULT ''`)
+  }
+  if (!existingCols.includes('inferred_intent')) {
+    db.exec(`ALTER TABLE cards ADD COLUMN inferred_intent TEXT NOT NULL DEFAULT ''`)
+  }
+  if (!existingCols.includes('topic')) {
+    db.exec(`ALTER TABLE cards ADD COLUMN topic TEXT NOT NULL DEFAULT ''`)
+  }
 }
 
 export function getDb(): Database.Database {

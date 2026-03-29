@@ -4,6 +4,8 @@ extension/dist/
 server/dist/
 server/public/
 server/data.db
+server/data.db-shm
+server/data.db-wal
 *.zip
 .DS_Store
 .env
@@ -12,3 +14,5 @@ server/data.db
 .env.*.local
 *.log
 logs/
+__pycache__/
+*.pyc

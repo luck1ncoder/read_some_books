@@ -29,6 +29,10 @@ export function getPageByUrl(url: string) {
   return getDb().prepare('SELECT * FROM pages WHERE url = ?').get(url) as any
 }
 
+export function updatePageStructure(id: string, doc_structure: string) {
+  getDb().prepare('UPDATE pages SET doc_structure = ? WHERE id = ?').run(doc_structure, id)
+}
+
 export function getPageById(id: string) {
   return getDb().prepare('SELECT * FROM pages WHERE id = ?').get(id) as any
 }
@@ -44,9 +48,12 @@ export function saveHighlight(data: { page_id: string; text: string; color: stri
 
 export function getHighlightsByUrl(url: string) {
   return getDb().prepare(`
-    SELECT h.* FROM highlights h
+    SELECT h.*, COUNT(hm.id) as message_count
+    FROM highlights h
     JOIN pages p ON h.page_id = p.id
+    LEFT JOIN highlight_messages hm ON hm.highlight_id = h.id
     WHERE p.url = ?
+    GROUP BY h.id
     ORDER BY h.created_at ASC
   `).all(url) as any[]
 }
@@ -58,15 +65,17 @@ export function createCard(data: {
   highlight_id: string | null
   title: string
   ai_explanation: string
+  context_interpretation: string
+  inferred_intent: string
   my_note: string
   tags: string[]
 }) {
   const id = uuid()
   const now = Date.now()
   getDb().prepare(`
-    INSERT INTO cards (id, highlight_id, page_id, title, ai_explanation, my_note, tags, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, data.highlight_id, data.page_id, data.title, data.ai_explanation, data.my_note, JSON.stringify(data.tags), now, now)
+    INSERT INTO cards (id, highlight_id, page_id, title, ai_explanation, context_interpretation, inferred_intent, my_note, tags, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, data.highlight_id, data.page_id, data.title, data.ai_explanation, data.context_interpretation, data.inferred_intent, data.my_note, JSON.stringify(data.tags), now, now)
   return { id }
 }
 
@@ -99,16 +108,60 @@ export function getCardById(id: string) {
   return { ...card, chat_messages }
 }
 
-export function updateCard(id: string, data: { title?: string; my_note?: string; tags?: string[] }) {
+export function updateCard(id: string, data: { title?: string; my_note?: string; tags?: string[]; inferred_intent?: string; topic?: string }) {
   const db = getDb()
   const fields: string[] = []
   const params: any[] = []
   if (data.title !== undefined) { fields.push('title = ?'); params.push(data.title) }
   if (data.my_note !== undefined) { fields.push('my_note = ?'); params.push(data.my_note) }
   if (data.tags !== undefined) { fields.push('tags = ?'); params.push(JSON.stringify(data.tags)) }
+  if (data.inferred_intent !== undefined) { fields.push('inferred_intent = ?'); params.push(data.inferred_intent) }
+  if (data.topic !== undefined) { fields.push('topic = ?'); params.push(data.topic) }
   fields.push('updated_at = ?'); params.push(Date.now())
   params.push(id)
   db.prepare(`UPDATE cards SET ${fields.join(', ')} WHERE id = ?`).run(...params)
+}
+
+// Returns all distinct topics with card count, sorted by count desc
+export function getTopics(): { topic: string; count: number }[] {
+  return getDb().prepare(`
+    SELECT topic, COUNT(*) as count FROM cards
+    WHERE topic != ''
+    GROUP BY topic ORDER BY count DESC
+  `).all() as any[]
+}
+
+// Bulk update topics (used by full recluster)
+export function bulkUpdateTopics(assignments: { id: string; topic: string }[]) {
+  const db = getDb()
+  const stmt = db.prepare(`UPDATE cards SET topic = ?, updated_at = ? WHERE id = ?`)
+  const now = Date.now()
+  const run = db.transaction(() => {
+    for (const a of assignments) stmt.run(a.topic, now, a.id)
+  })
+  run()
+}
+
+// --- Highlight Messages (annotation chat) ---
+
+export function getHighlightMessages(highlight_id: string) {
+  return getDb().prepare('SELECT * FROM highlight_messages WHERE highlight_id = ? ORDER BY created_at ASC').all(highlight_id) as any[]
+}
+
+export function saveHighlightMessage(data: { highlight_id: string; role: 'user' | 'assistant'; content: string }) {
+  const id = uuid()
+  getDb().prepare('INSERT INTO highlight_messages (id, highlight_id, role, content, created_at) VALUES (?, ?, ?, ?, ?)')
+    .run(id, data.highlight_id, data.role, data.content, Date.now())
+  return { id }
+}
+
+export function getHighlightWithPage(highlight_id: string) {
+  return getDb().prepare(`
+    SELECT h.*, p.full_text as page_full_text, p.title as page_title, p.url as page_url
+    FROM highlights h
+    LEFT JOIN pages p ON h.page_id = p.id
+    WHERE h.id = ?
+  `).get(highlight_id) as any
 }
 
 // --- Chat Messages ---

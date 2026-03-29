@@ -3,8 +3,8 @@
   "name": "Web Highlighter",
   "version": "0.1.0",
   "description": "Highlight text on any page and save to your knowledge base",
-  "permissions": ["activeTab", "storage", "sidePanel", "scripting", "tabs"],
-  "host_permissions": ["http://localhost:7749/*"],
+  "permissions": ["activeTab", "storage", "sidePanel", "scripting", "tabs", "sessions"],
+  "host_permissions": ["http://localhost:7749/*", "<all_urls>"],
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
@@ -20,7 +20,8 @@
     "default_path": "src/sidepanel/index.html"
   },
   "action": {
-    "default_title": "Open Web Highlighter"
+    "default_title": "知识书包",
+    "default_popup": "src/popup/index.html"
   },
   "icons": {
     "16": "icons/icon16.png",
