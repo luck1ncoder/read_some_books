@@ -4,6 +4,9 @@ import { getDomain } from './shared'
 import { BookReader } from './BookReader'
 import { ArticleView } from './ArticleView'
 import { CardFeedView } from './CardFeedView'
+import { MagazineView } from './MagazineView'
+import { NewspaperView } from './NewspaperView'
+import { DynamicLayoutView } from './DynamicLayoutView'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -160,7 +163,7 @@ export function Bookshelf() {
   const [openBook, setOpenBook] = useState<BookInfo | null>(null)
   const [animPhase, setAnimPhase] = useState<'shelf' | 'opening' | 'reading' | 'closing'>('shelf')
   const [flyStyle, setFlyStyle] = useState<React.CSSProperties>({})
-  const [readMode, setReadMode] = useState<'book' | 'scroll' | 'cards'>('book')
+  const [readMode, setReadMode] = useState<'book' | 'scroll' | 'cards' | 'magazine' | 'newspaper' | 'dynamic'>('book')
   const [fullscreen, setFullscreen] = useState(false)
   const coverRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const fullscreenRef = useRef<HTMLDivElement>(null)
@@ -504,6 +507,49 @@ export function Bookshelf() {
                     <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
                   </svg>
                 </button>
+                <button
+                  onClick={() => setReadMode('magazine')}
+                  title="杂志模式"
+                  style={{
+                    ...toolBtnStyle,
+                    background: readMode === 'magazine' ? '#e8e4de' : 'transparent',
+                    color: readMode === 'magazine' ? '#4a4540' : '#b0a99e',
+                    borderLeft: '1px solid #e0ddd8',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="12" y1="9" x2="12" y2="21" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setReadMode('newspaper')}
+                  title="报纸模式"
+                  style={{
+                    ...toolBtnStyle,
+                    background: readMode === 'newspaper' ? '#e8e4de' : 'transparent',
+                    color: readMode === 'newspaper' ? '#4a4540' : '#b0a99e',
+                    borderLeft: '1px solid #e0ddd8',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+                    <line x1="10" y1="6" x2="18" y2="6" /><line x1="10" y1="10" x2="18" y2="10" /><line x1="10" y1="14" x2="14" y2="14" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setReadMode('dynamic')}
+                  title="动态排版"
+                  style={{
+                    ...toolBtnStyle,
+                    background: readMode === 'dynamic' ? '#e8e4de' : 'transparent',
+                    color: readMode === 'dynamic' ? '#4a4540' : '#b0a99e',
+                    borderLeft: '1px solid #e0ddd8',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" /><line x1="21.17" y1="8" x2="12" y2="8" /><line x1="3.95" y1="6.06" x2="8.54" y2="14" /><line x1="10.88" y1="21.94" x2="15.46" y2="14" />
+                  </svg>
+                </button>
               </div>
 
               {/* Fullscreen toggle */}
@@ -539,8 +585,14 @@ export function Bookshelf() {
             />
           ) : readMode === 'scroll' ? (
             <ArticleView pageId={openBook.pageId} showFullContent />
-          ) : (
+          ) : readMode === 'cards' ? (
             <CardFeedView pageUrl={openBook.pageUrl} pageTitle={openBook.pageTitle} />
+          ) : readMode === 'magazine' ? (
+            <MagazineView pageId={openBook.pageId} />
+          ) : readMode === 'newspaper' ? (
+            <NewspaperView pageId={openBook.pageId} />
+          ) : (
+            <DynamicLayoutView pageId={openBook.pageId} />
           )}
         </div>
       )}
