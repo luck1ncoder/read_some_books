@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>杂志模式 Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Noto+Serif+SC:wght@400;600;700;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0c;
+    color: #e8e4dc;
+    min-height: 100vh;
+  }
+
+  .magazine {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  /* ── Header area ── */
+  .mag-header {
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .mag-category {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #c8a96e;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mag-category::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #c8a96e40, transparent);
+  }
+
+  .mag-title {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: #f5f2ec;
+    margin-bottom: 20px;
+    max-width: 800px;
+  }
+
+  .mag-subtitle {
+    font-family: 'Source Serif 4', 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 400;
+    font-style: italic;
+    color: #9a948a;
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  .mag-meta {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: #6a645a;
+    letter-spacing: 0.06em;
+    padding-top: 16px;
+    border-top: 1px solid #1e1c18;
+  }
+  .mag-meta .dot {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: #4a4540;
+  }
+
+  /* ── Divider ── */
+  .mag-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 40px 0 36px;
+  }
+  .mag-divider::before, .mag-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #1e1c18;
+  }
+  .mag-divider .ornament {
+    width: 6px; height: 6px;
+    border: 1px solid #3a3530;
+    transform: rotate(45deg);
+  }
+
+  /* ── Multi-column body ── */
+  .mag-body {
+    column-count: 3;
+    column-gap: 40px;
+    column-rule: 1px solid #1a1816;
+    font-family: 'Source Serif 4', 'Noto Serif SC', serif;
+    font-size: 15px;
+    line-height: 1.85;
+    color: #c8c0b4;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .mag-body p {
+    margin-bottom: 18px;
+    text-indent: 2em;
+  }
+
+  .mag-body p:first-of-type {
+    text-indent: 0;
+  }
+
+  /* Drop cap */
+  .drop-cap::first-letter {
+    font-family: 'Playfair Display', serif;
+    float: left;
+    font-size: 82px;
+    line-height: 0.7;
+    padding: 6px 10px 0 0;
+    color: #f5f2ec;
+    font-weight: 900;
+  }
+
+  /* Pull quote — spans across columns */
+  .pull-quote {
+    column-span: all;
+    margin: 36px 0;
+    padding: 28px 60px;
+    position: relative;
+    text-align: center;
+  }
+  .pull-quote::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c8a96e60, transparent);
+  }
+  .pull-quote::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c8a96e60, transparent);
+  }
+  .pull-quote-text {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.55;
+    color: #c8a96e;
+    letter-spacing: 0.01em;
+  }
+  .pull-quote-attr {
+    margin-top: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6a5e4e;
+  }
+
+  /* Heading inside columns */
+  .mag-body h2 {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #f5f2ec;
+    margin: 36px 0 16px;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+    text-indent: 0;
+    break-after: avoid;
+  }
+
+  .mag-body h3 {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #d4cec4;
+    margin: 24px 0 10px;
+    text-indent: 0;
+    break-after: avoid;
+  }
+
+  /* Highlight callout — inline in columns */
+  .highlight-callout {
+    background: linear-gradient(135deg, rgba(200,169,110,0.08), rgba(200,169,110,0.04));
+    border-left: 2px solid #c8a96e;
+    padding: 14px 16px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+    font-style: italic;
+    color: #d4c8a8;
+    font-size: 14px;
+    line-height: 1.7;
+    text-indent: 0;
+    break-inside: avoid;
+  }
+  .highlight-callout .hl-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #c8a96e;
+    font-style: normal;
+    margin-bottom: 4px;
+  }
+
+  /* List items */
+  .mag-body li {
+    margin-bottom: 8px;
+    text-indent: 0;
+    list-style: none;
+    padding-left: 16px;
+    position: relative;
+  }
+  .mag-body li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #4a4540;
+  }
+
+  /* Code block */
+  .mag-body pre {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #1e1c18;
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #a09888;
+    margin: 16px 0;
+    overflow-x: auto;
+    text-indent: 0;
+    white-space: pre-wrap;
+    break-inside: avoid;
+  }
+
+  /* Blockquote */
+  .mag-body blockquote {
+    border-left: 2px solid #2a2620;
+    padding: 8px 16px;
+    margin: 18px 0;
+    color: #8a8478;
+    font-style: italic;
+    text-indent: 0;
+    break-inside: avoid;
+  }
+
+  /* Image */
+  .mag-body figure {
+    margin: 24px 0;
+    text-indent: 0;
+    break-inside: avoid;
+  }
+  .mag-body figure img {
+    width: 100%;
+    border-radius: 4px;
+    opacity: 0.85;
+  }
+  .mag-body figcaption {
+    font-size: 11px;
+    color: #6a645a;
+    margin-top: 6px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* ── Ambient glow decorations ── */
+  .ambient-glow {
+    position: fixed;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .glow-1 {
+    top: 15%; right: 5%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,169,110,0.06), transparent 70%);
+  }
+  .glow-2 {
+    bottom: 20%; left: 8%;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(150,120,200,0.04), transparent 70%);
+  }
+
+  /* ── Footer ── */
+  .mag-footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid #1e1c18;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #4a4540;
+  }
+  .mag-footer a {
+    color: #c8a96e;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+  }
+  .mag-footer a:hover {
+    color: #e0c080;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .mag-body { column-count: 2; }
+    .mag-title { font-size: 44px; }
+    .magazine { padding: 40px 28px 60px; }
+  }
+  @media (max-width: 600px) {
+    .mag-body { column-count: 1; }
+    .mag-title { font-size: 32px; letter-spacing: -1px; }
+    .pull-quote { padding: 20px 20px; }
+    .pull-quote-text { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambient glows -->
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+
+<div class="magazine">
+
+  <!-- Header -->
+  <header class="mag-header">
+    <div class="mag-category">Deep Learning · Architecture</div>
+    <h1 class="mag-title">Attention Is All You Need</h1>
+    <div class="mag-subtitle">
+      A groundbreaking paper that introduced the Transformer architecture, replacing recurrent and convolutional networks with pure self-attention mechanisms.
+    </div>
+    <div class="mag-meta">
+      <span>arxiv.org</span>
+      <span class="dot"></span>
+      <span>2024年3月28日收藏</span>
+      <span class="dot"></span>
+      <span>13 处划线 · 4 处批注</span>
+    </div>
+  </header>
+
+  <!-- Ornamental divider -->
+  <div class="mag-divider"><div class="ornament"></div></div>
+
+  <!-- Multi-column body -->
+  <div class="mag-body">
+
+    <p class="drop-cap">The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.</p>
+
+    <p>Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU.</p>
+
+    <!-- Highlight callout (user's highlight) -->
+    <div class="highlight-callout">
+      <div class="hl-label">✦ 划线</div>
+      "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely."
+    </div>
+
+    <p>On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.0 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature.</p>
+
+    <h2>Model Architecture</h2>
+
+    <p>Most competitive neural sequence transduction models have an encoder-decoder structure. Here, the encoder maps an input sequence of symbol representations to a sequence of continuous representations. Given z, the decoder then generates an output sequence of symbols one element at a time.</p>
+
+    <!-- Pull quote — spans all columns -->
+    <div class="pull-quote">
+      <div class="pull-quote-text">"Text becomes a first-class participant in the visual composition — not a static block, but a fluid material that adapts in real time."</div>
+      <div class="pull-quote-attr">— Cheng Lou</div>
+    </div>
+
+    <p>At each step the model is auto-regressive, consuming the previously generated symbols as additional input when generating the next. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder.</p>
+
+    <p>The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network. We employ a residual connection around each of the two sub-layers, followed by layer normalization.</p>
+
+    <h3>Scaled Dot-Product Attention</h3>
+
+    <p>An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.</p>
+
+    <!-- Another highlight -->
+    <div class="highlight-callout">
+      <div class="hl-label">✦ 划线 + 批注</div>
+      "Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence."
+    </div>
+
+    <p>We call our particular attention "Scaled Dot-Product Attention". The input consists of queries and keys of dimension d_k, and values of dimension d_v. We compute the dot products of the query with all keys, divide each by the square root of d_k, and apply a softmax function to obtain the weights on the values.</p>
+
+    <h2>Multi-Head Attention</h2>
+
+    <p>Instead of performing a single attention function with d_model-dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to d_k, d_k and d_v dimensions, respectively.</p>
+
+    <p>On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding d_v-dimensional output values. These are concatenated and once again projected, resulting in the final values. Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.</p>
+
+    <blockquote>
+      With a single attention head, averaging inhibits this. The multi-head mechanism addresses this limitation elegantly.
+    </blockquote>
+
+    <p>In this work we employ h = 8 parallel attention heads. For each of these we use d_k = d_v = d_model/h = 64. Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality.</p>
+
+    <h3>Applications of Attention</h3>
+
+    <p>The Transformer uses multi-head attention in three different ways. First, in "encoder-decoder attention" layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder.</p>
+
+    <p>This allows every position in the decoder to attend over all positions in the input sequence. This mimics the typical encoder-decoder attention mechanisms in sequence-to-sequence models. Second, the encoder contains self-attention layers.</p>
+
+    <p>In a self-attention layer, all of the keys, values and queries come from the same place — the output of the previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. Similarly, self-attention layers in the decoder allow each position in the decoder to attend to all positions in the decoder up to and including that position.</p>
+
+    <p>We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data. This demonstrates that the architecture is not merely optimized for translation but represents a general-purpose sequence modeling framework with broad applicability across natural language processing tasks.</p>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mag-footer">
+    <span>13 处划线 · 4 处批注</span>
+    <a href="#">查看原文 →</a>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阅读模式对比 — Magazine vs Newspaper</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Noto+Serif+SC:wght@400;600;700;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=DM+Serif+Display&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, sans-serif; background: #111; min-height: 100vh; }
+
+  /* Tab bar */
+  .tab-bar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: center; gap: 0;
+    background: rgba(17,17,17,0.95); backdrop-filter: blur(12px);
+    padding: 16px 0; border-bottom: 1px solid #222;
+  }
+  .tab-btn {
+    padding: 8px 28px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.03em;
+    background: none; color: #666; border-bottom: 2px solid transparent;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .tab-btn.active { color: #e8e4dc; border-bottom-color: #c8a96e; }
+  .tab-btn:hover { color: #aaa; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     MAGAZINE — 暗色 Editorial Engine 风格
+     ══════════════════════════════════════════════════════════════════════ */
+  .mag { background: #0a0a0c; color: #e8e4dc; min-height: 100vh; }
+  .mag-inner { max-width: 1100px; margin: 0 auto; padding: 60px 48px 80px; }
+
+  .mag .header { margin-bottom: 48px; }
+  .mag .category {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: #c8a96e; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .mag .category::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, #c8a96e40, transparent); }
+
+  .mag .title {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 58px; font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+    color: #f5f2ec; margin-bottom: 20px; max-width: 800px;
+  }
+  .mag .subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px; font-style: italic; color: #9a948a; line-height: 1.6; max-width: 560px;
+  }
+  .mag .meta {
+    margin-top: 24px; display: flex; align-items: center; gap: 14px;
+    font-size: 11px; color: #6a645a; padding-top: 16px; border-top: 1px solid #1e1c18;
+  }
+  .mag .meta .dot { width: 3px; height: 3px; border-radius: 50%; background: #4a4540; }
+
+  .mag .divider {
+    display: flex; align-items: center; gap: 16px; margin: 40px 0 36px;
+  }
+  .mag .divider::before, .mag .divider::after { content: ''; flex: 1; height: 1px; background: #1e1c18; }
+  .mag .divider .ornament { width: 6px; height: 6px; border: 1px solid #3a3530; transform: rotate(45deg); }
+
+  .mag .body {
+    column-count: 3; column-gap: 40px; column-rule: 1px solid #1a1816;
+    font-family: 'Source Serif 4', 'Noto Serif SC', serif;
+    font-size: 15px; line-height: 1.85; color: #c8c0b4;
+    text-align: justify; hyphens: auto;
+  }
+  .mag .body p { margin-bottom: 18px; text-indent: 2em; }
+  .mag .body p:first-of-type { text-indent: 0; }
+
+  .mag .drop-cap::first-letter {
+    font-family: 'Playfair Display', serif;
+    float: left; font-size: 82px; line-height: 0.7; padding: 6px 10px 0 0;
+    color: #f5f2ec; font-weight: 900;
+  }
+
+  .mag .pull-quote {
+    column-span: all; margin: 36px 0; padding: 28px 60px;
+    position: relative; text-align: center;
+  }
+  .mag .pull-quote::before, .mag .pull-quote::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 1px;
+    background: linear-gradient(to right, transparent, #c8a96e60, transparent);
+  }
+  .mag .pull-quote::before { top: 0; }
+  .mag .pull-quote::after { bottom: 0; }
+  .mag .pq-text {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 22px; font-style: italic; color: #c8a96e; line-height: 1.55;
+  }
+
+  .mag .body h2 {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 22px; font-weight: 700; color: #f5f2ec;
+    margin: 36px 0 16px; line-height: 1.3; text-indent: 0; break-after: avoid;
+  }
+
+  .mag .hl-box {
+    background: linear-gradient(135deg, rgba(200,169,110,0.08), rgba(200,169,110,0.04));
+    border-left: 2px solid #c8a96e; padding: 14px 16px; margin: 20px 0;
+    border-radius: 0 6px 6px 0; font-style: italic; color: #d4c8a8;
+    font-size: 14px; line-height: 1.7; text-indent: 0; break-inside: avoid;
+  }
+  .mag .hl-box .hl-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #c8a96e; font-style: normal; margin-bottom: 4px;
+  }
+
+  .mag .body blockquote {
+    border-left: 2px solid #2a2620; padding: 8px 16px; margin: 18px 0;
+    color: #8a8478; font-style: italic; text-indent: 0; break-inside: avoid;
+  }
+
+  /* Ambient glows */
+  .mag .glow {
+    position: absolute; pointer-events: none; border-radius: 50%;
+  }
+  .mag .glow-1 {
+    top: 200px; right: 60px; width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(200,169,110,0.07), transparent 70%);
+  }
+  .mag .glow-2 {
+    bottom: 300px; left: 40px; width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(140,120,200,0.05), transparent 70%);
+  }
+
+  .mag .footer {
+    margin-top: 48px; padding-top: 20px; border-top: 1px solid #1e1c18;
+    display: flex; justify-content: space-between; font-size: 11px; color: #4a4540;
+  }
+  .mag .footer a { color: #c8a96e; text-decoration: none; }
+
+  @media (max-width: 900px) { .mag .body { column-count: 2; } .mag .title { font-size: 40px; } }
+  @media (max-width: 600px) { .mag .body { column-count: 1; } .mag .title { font-size: 30px; } }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     NEWSPAPER — 暖色 Dynamic Layout 风格 (Leopold Aschenbrenner 版面)
+     ══════════════════════════════════════════════════════════════════════ */
+  .news { background: #f4efe6; color: #1a1610; min-height: 100vh; }
+  .news-inner { max-width: 1100px; margin: 0 auto; padding: 48px 48px 80px; position: relative; }
+
+  /* Masthead */
+  .news .masthead {
+    text-align: center; padding-bottom: 16px;
+    border-bottom: 3px double #2a2418;
+    margin-bottom: 8px;
+  }
+  .news .masthead-name {
+    font-family: 'DM Serif Display', 'Noto Serif SC', serif;
+    font-size: 12px; letter-spacing: 0.35em; text-transform: uppercase;
+    color: #6a5e4e; margin-bottom: 4px;
+  }
+  .news .masthead-date {
+    font-family: 'Source Serif 4', serif;
+    font-size: 10px; color: #9a8e7e; letter-spacing: 0.1em;
+  }
+
+  /* Thin rule under masthead */
+  .news .rule { height: 1px; background: #2a2418; margin-bottom: 32px; }
+
+  /* Headline area — large title left, meta right */
+  .news .headline-area {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 40px;
+    margin-bottom: 32px;
+    align-items: end;
+  }
+
+  .news .headline {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 52px; font-weight: 900; line-height: 1.0; letter-spacing: -1.5px;
+    color: #1a1610;
+  }
+
+  .news .headline-meta {
+    padding: 20px 0;
+    border-top: 1px solid #c8bfae;
+    border-bottom: 1px solid #c8bfae;
+  }
+  .news .headline-meta .author {
+    font-family: 'Source Serif 4', serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #4a4238; margin-bottom: 8px;
+  }
+  .news .headline-meta .summary {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px; font-style: italic; color: #6a5e4e; line-height: 1.6;
+  }
+
+  /* Content grid — 2 columns for newspaper */
+  .news .body {
+    column-count: 2; column-gap: 36px; column-rule: 1px solid #d4c9b0;
+    font-family: 'Source Serif 4', 'Noto Serif SC', serif;
+    font-size: 15px; line-height: 1.8; color: #2a2418;
+    text-align: justify; hyphens: auto;
+  }
+  .news .body p { margin-bottom: 16px; text-indent: 1.5em; }
+  .news .body p:first-of-type { text-indent: 0; }
+
+  .news .drop-cap::first-letter {
+    font-family: 'Playfair Display', serif;
+    float: left; font-size: 76px; line-height: 0.72; padding: 4px 8px 0 0;
+    color: #1a1610; font-weight: 900;
+  }
+
+  .news .body h2 {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 20px; font-weight: 700; color: #1a1610;
+    margin: 32px 0 14px; line-height: 1.3; text-indent: 0; break-after: avoid;
+  }
+
+  /* Newspaper pull quote — boxed, accent line top & bottom */
+  .news .pull-quote {
+    column-span: all; margin: 32px 0; padding: 24px 48px;
+    position: relative; text-align: center;
+    border-top: 2px solid #2a2418; border-bottom: 2px solid #2a2418;
+  }
+  .news .pq-text {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 24px; font-weight: 700; font-style: italic; color: #1a1610; line-height: 1.4;
+  }
+  .news .pq-attr {
+    margin-top: 8px; font-family: 'Source Serif 4', serif;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #9a8e7e;
+  }
+
+  /* Highlight callout — newspaper style */
+  .news .hl-box {
+    background: rgba(200,169,110,0.1);
+    border-left: 3px solid #b8a070;
+    padding: 14px 16px; margin: 18px 0;
+    border-radius: 0 4px 4px 0;
+    font-style: italic; color: #4a4238;
+    font-size: 14px; line-height: 1.7;
+    text-indent: 0; break-inside: avoid;
+  }
+  .news .hl-box .hl-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #8a7e6e; font-style: normal; margin-bottom: 4px;
+  }
+
+  .news .body blockquote {
+    border-left: 2px solid #c8bfae; padding: 8px 16px; margin: 18px 0;
+    color: #6a5e4e; font-style: italic; text-indent: 0; break-inside: avoid;
+  }
+
+  /* Decorative sun element (inspired by Dynamic Layout) */
+  .news .deco-sun {
+    position: absolute; top: 60px; right: -30px;
+    width: 120px; height: 120px; opacity: 0.08;
+    pointer-events: none;
+  }
+  .news .deco-sun svg { width: 100%; height: 100%; }
+
+  .news .footer {
+    margin-top: 48px; padding-top: 20px; border-top: 2px solid #2a2418;
+    display: flex; justify-content: space-between; font-size: 11px; color: #9a8e7e;
+  }
+  .news .footer a { color: #6a5e4e; text-decoration: none; font-weight: 600; }
+
+  @media (max-width: 800px) {
+    .news .headline-area { grid-template-columns: 1fr; gap: 20px; }
+    .news .headline { font-size: 38px; }
+    .news .body { column-count: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="show('mag')">Magazine · 杂志</button>
+  <button class="tab-btn" onclick="show('news')">Newspaper · 报纸</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     MAGAZINE (暗色)
+     ══════════════════════════════════════════════════════════════════ -->
+<div id="p-mag" class="panel active">
+<div class="mag">
+  <div class="mag-inner" style="position:relative;">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <div class="header">
+      <div class="category">Deep Learning · Architecture</div>
+      <div class="title">Attention Is All You Need</div>
+      <div class="subtitle">A groundbreaking paper that introduced the Transformer architecture, replacing recurrent networks with pure self-attention mechanisms.</div>
+      <div class="meta">
+        <span>arxiv.org</span><span class="dot"></span>
+        <span>2024年3月28日收藏</span><span class="dot"></span>
+        <span>13 处划线 · 4 处批注</span>
+      </div>
+    </div>
+
+    <div class="divider"><div class="ornament"></div></div>
+
+    <div class="body">
+      <p class="drop-cap">The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.</p>
+
+      <p>Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results by over 2 BLEU.</p>
+
+      <div class="hl-box">
+        <div class="hl-label">✦ 划线</div>
+        "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely."
+      </div>
+
+      <p>On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.0 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature.</p>
+
+      <h2>Model Architecture</h2>
+
+      <p>Most competitive neural sequence transduction models have an encoder-decoder structure. Here, the encoder maps an input sequence of symbol representations to a sequence of continuous representations. Given z, the decoder then generates an output sequence of symbols one element at a time.</p>
+
+      <div class="pull-quote">
+        <div class="pq-text">"The performance improvement is not incremental — it is categorical. 0.05ms versus 30ms. Zero reflows versus five hundred."</div>
+      </div>
+
+      <p>At each step the model is auto-regressive, consuming the previously generated symbols as additional input when generating the next. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder.</p>
+
+      <p>The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network. We employ a residual connection around each of the two sub-layers, followed by layer normalization.</p>
+
+      <div class="hl-box">
+        <div class="hl-label">✦ 划线 + 批注</div>
+        "Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence."
+      </div>
+
+      <h2>Multi-Head Attention</h2>
+
+      <p>Instead of performing a single attention function with d_model-dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to d_k, d_k and d_v dimensions, respectively.</p>
+
+      <p>On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding d_v-dimensional output values. These are concatenated and once again projected, resulting in the final values.</p>
+
+      <blockquote>With a single attention head, averaging inhibits this. The multi-head mechanism addresses this limitation elegantly.</blockquote>
+
+      <p>In this work we employ h = 8 parallel attention heads. For each of these we use d_k = d_v = d_model/h = 64. Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality.</p>
+
+      <p>We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data, demonstrating its broad applicability across natural language processing tasks.</p>
+    </div>
+
+    <div class="footer">
+      <span>13 处划线 · 4 处批注</span>
+      <a href="#">查看原文 →</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     NEWSPAPER (暖色)
+     ══════════════════════════════════════════════════════════════════ -->
+<div id="p-news" class="panel">
+<div class="news">
+  <div class="news-inner">
+
+    <!-- Decorative element (like the sun/logo in Cheng Lou's dynamic-layout) -->
+    <div class="deco-sun">
+      <svg viewBox="0 0 100 100">
+        <g fill="#2a2418">
+          <circle cx="50" cy="50" r="20"/>
+          <g><rect x="48" y="5" width="4" height="18" rx="2"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(30 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(60 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(90 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(120 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(150 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(180 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(210 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(240 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(270 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(300 50 50)"/><rect x="48" y="5" width="4" height="18" rx="2" transform="rotate(330 50 50)"/></g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="masthead">
+      <div class="masthead-name">The Reader's Digest</div>
+      <div class="masthead-date">Monday, March 28, 2024 · arxiv.org</div>
+    </div>
+    <div class="rule"></div>
+
+    <div class="headline-area">
+      <h1 class="headline">Attention Is All You Need</h1>
+      <div class="headline-meta">
+        <div class="author">Google Research</div>
+        <div class="summary">A groundbreaking paper that introduced the Transformer architecture, replacing recurrent networks with pure self-attention mechanisms.</div>
+      </div>
+    </div>
+
+    <div class="body">
+      <p class="drop-cap">The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.</p>
+
+      <p>Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task.</p>
+
+      <div class="hl-box">
+        <div class="hl-label">✦ 划线</div>
+        "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely."
+      </div>
+
+      <p>On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.0 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature.</p>
+
+      <h2>Model Architecture</h2>
+
+      <p>Most competitive neural sequence transduction models have an encoder-decoder structure. Here, the encoder maps an input sequence of symbol representations to a sequence of continuous representations. Given z, the decoder then generates an output sequence of symbols one element at a time.</p>
+
+      <div class="pull-quote">
+        <div class="pq-text">"The performance improvement is not incremental — it is categorical."</div>
+        <div class="pq-attr">— Vaswani et al.</div>
+      </div>
+
+      <p>At each step the model is auto-regressive, consuming the previously generated symbols as additional input when generating the next. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder.</p>
+
+      <p>The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.</p>
+
+      <div class="hl-box">
+        <div class="hl-label">✦ 划线 + 批注</div>
+        "Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence."
+      </div>
+
+      <h2>Multi-Head Attention</h2>
+
+      <p>Instead of performing a single attention function with d_model-dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to d_k, d_k and d_v dimensions, respectively.</p>
+
+      <blockquote>With a single attention head, averaging inhibits this. The multi-head mechanism addresses this limitation elegantly.</blockquote>
+
+      <p>On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding d_v-dimensional output values. These are concatenated and once again projected, resulting in the final values.</p>
+
+      <p>In this work we employ h = 8 parallel attention heads. For each of these we use d_k = d_v = d_model/h = 64. Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality.</p>
+
+      <p>We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data, demonstrating its broad applicability.</p>
+    </div>
+
+    <div class="footer">
+      <span>13 处划线 · 4 处批注</span>
+      <a href="#">查看原文 →</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('p-' + id).classList.add('active')
+  event.target.classList.add('active')
+}
+</script>
+</body>
+</html>
