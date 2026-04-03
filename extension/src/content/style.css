@@ -1,0 +1,60 @@
+.wh-highlight {
+  background-color: rgba(255, 220, 0, 0.35);
+  border-bottom: 2px solid rgba(255, 180, 0, 0.8);
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.wh-toolbar {
+  position: fixed;
+  z-index: 2147483647;
+  background: #1e1e2e;
+  border-radius: 10px;
+  padding: 6px 8px;
+  display: flex;
+  gap: 4px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.wh-btn {
+  background: transparent;
+  border: none;
+  color: #cdd6f4;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.wh-btn:hover { background: rgba(255,255,255,0.1); }
+
+.wh-output {
+  position: fixed;
+  z-index: 2147483646;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 10px;
+  padding: 12px 16px;
+  max-width: 380px;
+  font-size: 13px;
+  line-height: 1.6;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.wh-note-input {
+  width: 280px;
+  background: #313244;
+  color: #cdd6f4;
+  border: 1px solid #45475a;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+  margin-top: 6px;
+}

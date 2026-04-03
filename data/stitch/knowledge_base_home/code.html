@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atelier | Knowledge Base</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed": "#dcd2f4",
+              "on-surface": "#2d3338",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-highest": "#dde3e9",
+              "surface": "#f9f9fb",
+              "on-secondary-fixed-variant": "#5b5b60",
+              "surface-container": "#ebeef2",
+              "on-surface-variant": "#596065",
+              "on-secondary-container": "#515156",
+              "surface-dim": "#d3dbe2",
+              "outline-variant": "#acb3b8",
+              "surface-variant": "#dde3e9",
+              "on-error": "#fff7f6",
+              "on-secondary": "#faf8fe",
+              "on-primary-container": "#525154",
+              "tertiary-container": "#dcd2f4",
+              "on-tertiary-fixed-variant": "#57506c",
+              "primary-fixed": "#e4e2e4",
+              "surface-container-low": "#f2f4f6",
+              "inverse-surface": "#0c0e10",
+              "on-primary-fixed": "#3f3f41",
+              "on-background": "#2d3338",
+              "inverse-primary": "#ffffff",
+              "primary": "#5f5e60",
+              "on-tertiary-fixed": "#3a344e",
+              "tertiary-dim": "#564f6b",
+              "on-secondary-fixed": "#3e3f43",
+              "tertiary-fixed-dim": "#cec5e5",
+              "on-primary": "#faf7f9",
+              "secondary-fixed": "#e3e2e7",
+              "secondary-container": "#e3e2e7",
+              "primary-fixed-dim": "#d6d3d6",
+              "primary-dim": "#535254",
+              "surface-container-high": "#e4e9ee",
+              "outline": "#757c81",
+              "secondary-fixed-dim": "#d5d4d9",
+              "tertiary": "#625b77",
+              "secondary-dim": "#525357",
+              "surface-tint": "#5f5e60",
+              "surface-bright": "#f9f9fb",
+              "background": "#f9f9fb",
+              "inverse-on-surface": "#9c9d9f",
+              "error": "#9f403d",
+              "on-primary-fixed-variant": "#5c5b5d",
+              "on-tertiary": "#fdf7ff",
+              "primary-container": "#e4e2e4",
+              "on-error-container": "#752121",
+              "secondary": "#5e5f63",
+              "error-dim": "#4e0309",
+              "error-container": "#fe8983",
+              "on-tertiary-container": "#4d4762"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar (Authority: JSON & Design System) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-zinc-50 dark:bg-zinc-950 flex flex-col h-full p-4 space-y-2 border-r border-zinc-200/50 dark:border-zinc-800/50 z-50">
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-[20px]">brush</span>
+</div>
+<div>
+<h2 class="text-sm font-bold uppercase tracking-widest text-zinc-400">The Atelier</h2>
+<p class="text-[11px] text-on-surface-variant font-medium">Personal Workspace</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active Tab: Home (Semantic Mapping) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 font-medium rounded-lg shadow-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span class="font-sans text-[13px] leading-relaxed">Home</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="font-sans text-[13px] leading-relaxed">All Pages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="font-sans text-[13px] leading-relaxed">Library</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="font-sans text-[13px] leading-relaxed">Favorites</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]">archive</span>
+<span class="font-sans text-[13px] leading-relaxed">Archive</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-zinc-200/30">
+<button class="w-full py-2.5 bg-gradient-to-b from-primary to-primary-dim text-on-primary rounded-xl text-[13px] font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Page
+            </button>
+</div>
+<div class="mt-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+<span class="font-sans text-[13px] leading-relaxed">Help</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+<span class="font-sans text-[13px] leading-relaxed">Trash</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar (Authority: JSON & Design System) -->
+<header class="fixed top-0 right-0 left-64 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-8 py-3 w-full">
+<!-- Navigation Links / Breadcrumbs -->
+<nav class="flex items-center gap-6">
+<a class="text-zinc-900 dark:text-zinc-50 font-semibold border-b border-zinc-900 dark:border-zinc-50 pb-1 font-sans text-sm tracking-tight" href="#">Drafts</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 font-sans text-sm font-medium tracking-tight transition-colors duration-200" href="#">Shared</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 font-sans text-sm font-medium tracking-tight transition-colors duration-200" href="#">Private</a>
+</nav>
+<!-- Actions Cluster -->
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover" data-alt="Close up professional headshot portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNdf4mh2QE_LGHym1za8FBrKJR8mMdn_qUKLVedwwvI7vteywBG3QETJSPE5Cu7vjM2Lax_5pS9VSgcOGkHYwTzfpUxs13n3JXjkd5TOUIeJ5-SDeyZ85XdAPq6-qF0An3OhfuJlPoaWn8iXJ-AqTHzkScTQhLM5_ywOhC7ebWoE8WcWucEA2FNGa_zBjSKA8EYhmjG7y_JcSjqW3mDPTn3GKVMZwkLMxcS3JX2u6YxydDLreIxH2knQBy7BFuSN5B6XQm6-500BM"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<section class="mt-16 p-12 max-w-[1200px] w-full mx-auto">
+<!-- Hero Search Section -->
+<div class="mb-16">
+<h1 class="text-[3.5rem] font-semibold leading-[1.1] text-on-surface tracking-tight mb-8">
+                    Welcome to <span class="text-primary/60">The Atelier.</span>
+</h1>
+<div class="relative group max-w-2xl">
+<div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant/50">search</span>
+</div>
+<input class="w-full pl-14 pr-6 py-5 bg-surface-container-low border-none rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all duration-300 placeholder:text-on-surface-variant/40 text-lg" placeholder="Search knowledge, projects, or guidelines..." type="text"/>
+</div>
+</div>
+<!-- Quick Start / Pinned Cards Section -->
+<div class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-[1.125rem] font-medium text-on-surface tracking-tight">Pinned Guidelines</h2>
+<a class="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Knowledge Node 1 -->
+<div class="group p-6 bg-surface-container-lowest rounded-xl hover:shadow-[0_20px_40px_rgba(45,51,56,0.04)] transition-all duration-300 flex flex-col">
+<span class="text-[0.75rem] font-medium text-on-surface-variant uppercase tracking-wider mb-3">Onboarding</span>
+<h3 class="text-lg font-semibold text-on-surface mb-2">Workspace Setup 101</h3>
+<p class="text-sm leading-relaxed text-on-surface-variant mb-6">Master the art of organizing your digital atelier with our structural framework.</p>
+<div class="mt-auto flex items-center gap-2 text-xs font-medium text-primary">
+<span>Read Guideline</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+<!-- Knowledge Node 2 -->
+<div class="group p-6 bg-surface-container-lowest rounded-xl hover:shadow-[0_20px_40px_rgba(45,51,56,0.04)] transition-all duration-300 flex flex-col border border-transparent hover:border-surface-container">
+<span class="text-[0.75rem] font-medium text-on-surface-variant uppercase tracking-wider mb-3">Brand Identity</span>
+<h3 class="text-lg font-semibold text-on-surface mb-2">Visual Standards V2</h3>
+<p class="text-sm leading-relaxed text-on-surface-variant mb-6">Latest updates to our monochromatic palette and editorial typography rules.</p>
+<div class="mt-auto flex items-center gap-2 text-xs font-medium text-primary">
+<span>View Assets</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+<!-- Knowledge Node 3 -->
+<div class="group p-6 bg-surface-container-lowest rounded-xl hover:shadow-[0_20px_40px_rgba(45,51,56,0.04)] transition-all duration-300 flex flex-col border border-transparent hover:border-surface-container">
+<span class="text-[0.75rem] font-medium text-on-surface-variant uppercase tracking-wider mb-3">Engineering</span>
+<h3 class="text-lg font-semibold text-on-surface mb-2">Code Architecture</h3>
+<p class="text-sm leading-relaxed text-on-surface-variant mb-6">Best practices for building modular components using the Atelier Design System.</p>
+<div class="mt-auto flex items-center gap-2 text-xs font-medium text-primary">
+<span>Documentation</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Broad Knowledge Categories (Bento Grid Style) -->
+<div>
+<h2 class="text-[1.125rem] font-medium text-on-surface tracking-tight mb-8">Categories</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[160px]">
+<!-- Marketing -->
+<div class="md:col-span-2 md:row-span-2 bg-surface-container-lowest p-8 rounded-xl flex flex-col group cursor-pointer hover:bg-surface-container-low transition-colors duration-300">
+<div class="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-on-surface">campaign</span>
+</div>
+<h3 class="text-xl font-bold mb-2">Marketing</h3>
+<p class="text-sm text-on-surface-variant max-w-[240px]">Strategic growth, social frameworks, and campaign archives.</p>
+<div class="mt-auto text-xs text-on-surface-variant/60 font-medium">124 Articles</div>
+</div>
+<!-- Engineering -->
+<div class="md:col-span-2 bg-surface-container-low p-6 rounded-xl flex items-center justify-between group cursor-pointer hover:bg-surface-container-high transition-colors">
+<div>
+<h3 class="text-lg font-bold mb-1">Engineering</h3>
+<p class="text-sm text-on-surface-variant">Infrastructure &amp; API docs.</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center group-hover:rotate-12 transition-transform">
+<span class="material-symbols-outlined text-on-surface">developer_mode</span>
+</div>
+</div>
+<!-- Operations -->
+<div class="md:col-span-1 bg-surface-container-low p-6 rounded-xl flex flex-col group cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface mb-4">settings_accessibility</span>
+<h3 class="text-md font-bold">Operations</h3>
+<p class="text-xs text-on-surface-variant mt-1">HR &amp; Office</p>
+</div>
+<!-- Product -->
+<div class="md:col-span-1 bg-surface-container-low p-6 rounded-xl flex flex-col group cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface mb-4">inventory</span>
+<h3 class="text-md font-bold">Product</h3>
+<p class="text-xs text-on-surface-variant mt-1">Roadmaps</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual FAB (Only on Home) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-on-surface text-surface-container-lowest rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+</main>
+</body></html>

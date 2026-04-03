@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atelier | Knowledge Card</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed": "#dcd2f4",
+              "on-surface": "#2d3338",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-highest": "#dde3e9",
+              "surface": "#f9f9fb",
+              "on-secondary-fixed-variant": "#5b5b60",
+              "surface-container": "#ebeef2",
+              "on-surface-variant": "#596065",
+              "on-secondary-container": "#515156",
+              "surface-dim": "#d3dbe2",
+              "outline-variant": "#acb3b8",
+              "surface-variant": "#dde3e9",
+              "on-error": "#fff7f6",
+              "on-secondary": "#faf8fe",
+              "on-primary-container": "#525154",
+              "tertiary-container": "#dcd2f4",
+              "on-tertiary-fixed-variant": "#57506c",
+              "primary-fixed": "#e4e2e4",
+              "surface-container-low": "#f2f4f6",
+              "inverse-surface": "#0c0e10",
+              "on-primary-fixed": "#3f3f41",
+              "on-background": "#2d3338",
+              "inverse-primary": "#ffffff",
+              "primary": "#5f5e60",
+              "on-tertiary-fixed": "#3a344e",
+              "tertiary-dim": "#564f6b",
+              "on-secondary-fixed": "#3e3f43",
+              "tertiary-fixed-dim": "#cec5e5",
+              "on-primary": "#faf7f9",
+              "secondary-fixed": "#e3e2e7",
+              "secondary-container": "#e3e2e7",
+              "primary-fixed-dim": "#d6d3d6",
+              "primary-dim": "#535254",
+              "surface-container-high": "#e4e9ee",
+              "outline": "#757c81",
+              "secondary-fixed-dim": "#d5d4d9",
+              "tertiary": "#625b77",
+              "secondary-dim": "#525357",
+              "surface-tint": "#5f5e60",
+              "surface-bright": "#f9f9fb",
+              "background": "#f9f9fb",
+              "inverse-on-surface": "#9c9d9f",
+              "error": "#9f403d",
+              "on-primary-fixed-variant": "#5c5b5d",
+              "on-tertiary": "#fdf7ff",
+              "primary-container": "#e4e2e4",
+              "on-error-container": "#752121",
+              "secondary": "#5e5f63",
+              "error-dim": "#4e0309",
+              "error-container": "#fe8983",
+              "on-tertiary-container": "#4d4762"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .prose h1 { font-size: 3.5rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #2d3338; margin-bottom: 2rem; }
+        .prose h2 { font-size: 1.75rem; font-weight: 600; line-height: 1.2; color: #2d3338; margin-top: 3.5rem; margin-bottom: 1.5rem; }
+        .prose h3 { font-size: 1.125rem; font-weight: 500; line-height: 1.4; color: #2d3338; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose p { font-size: 1rem; font-weight: 400; line-height: 1.6; color: #2d3338; margin-bottom: 1.5rem; }
+        .prose ul { list-style-type: none; padding-left: 0; margin-bottom: 1.5rem; }
+        .prose li { position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem; font-size: 1rem; line-height: 1.6; color: #2d3338; }
+        .prose li::before { content: ""; position: absolute; left: 0; top: 0.7rem; width: 4px; height: 4px; background-color: #acb3b8; border-radius: 50%; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 sticky bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-3 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-lg font-semibold tracking-tighter text-zinc-900 dark:text-zinc-50">Atelier</span>
+<div class="hidden md:flex items-center space-x-6">
+<a class="font-sans text-sm font-medium tracking-tight text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors duration-200" href="#">Drafts</a>
+<a class="font-sans text-sm font-medium tracking-tight text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors duration-200" href="#">Shared</a>
+<a class="font-sans text-sm font-medium tracking-tight text-zinc-900 dark:text-zinc-50 font-semibold border-b border-zinc-900 dark:border-zinc-50 pb-1" href="#">Private</a>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container ml-2">
+<img alt="User Profile" data-alt="Portrait of the user profile owner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDStulF-6O0MCzwyLlfzW5TmLd-JUS8JDhN8ITQ7XaSf833PtEknudABZh1T9fMzTRL6giOnroxbaDxrJECO6jqLb9IYIaoeRyGPwYLHUxl8H9LawHAZ5_5YiHtejyT2mwnLjQtRKt2l65emNNnWJkJv1qK-YS9llbd0--mAuf9Iv004dNuNji2jVUiVXleI6SfjFBmhuB_TOPzYsHyjntVt_eEaqWFxRisKGf1W2ibsQ_WMRo_aROWzl-PJN4T3poQPKf59nuBb-g"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) - Suppressed for focus page, but kept for layout reference if needed -->
+<!-- Applying "The Destination Rule": Navigation is visible for top-level ecosystem screens. -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col bg-zinc-50 dark:bg-zinc-950 p-4 space-y-2 border-r border-zinc-200/50 dark:border-zinc-800/50 z-40">
+<div class="mb-8 pt-16">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<h2 class="text-sm font-bold uppercase tracking-widest text-zinc-400">The Atelier</h2>
+<p class="text-[11px] text-on-surface-variant">Personal Workspace</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-2 px-4 bg-primary text-on-primary rounded-xl font-medium text-sm transition-all hover:opacity-90 active:scale-95 mb-4">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Page
+            </button>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="home">home</span>
+<span class="font-sans text-[13px] leading-relaxed">Home</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 font-medium rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-sans text-[13px] leading-relaxed">All Pages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="inventory_2">inventory_2</span>
+<span class="font-sans text-[13px] leading-relaxed">Library</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="star">star</span>
+<span class="font-sans text-[13px] leading-relaxed">Favorites</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="archive">archive</span>
+<span class="font-sans text-[13px] leading-relaxed">Archive</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-sans text-[13px] leading-relaxed">Help</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+<span class="font-sans text-[13px] leading-relaxed">Trash</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 pt-24 pb-32 px-6 lg:px-12">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
+<!-- Article Body (Asymmetric Layout: 2/3 Width) -->
+<article class="flex-1 max-w-[720px] mx-auto lg:mx-0">
+<!-- Metadata Header -->
+<header class="mb-12">
+<div class="flex items-center gap-3 mb-6">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] font-semibold uppercase tracking-widest rounded">Architecture</span>
+<span class="text-outline-variant text-[10px]">•</span>
+<time class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">Oct 24, 2023</time>
+</div>
+<h1 class="font-headline text-[3.5rem] font-semibold leading-[1.1] tracking-tight text-on-surface mb-8">The Principles of Brutalist Digital Design</h1>
+<div class="flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden bg-surface-container">
+<img alt="Author" data-alt="Portrait of the author Elias Thorne" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuXva7hK4Weoz2wY34S1YZGmBtzwv455o1bw8lgf47rA7EUHuwyYD62IvGwqkO_F1VkJqB0BvNRhjz98femAGuoUmZVr64ju6LJHgDw0hFv7OGEi57RXqD8T8MxY_o8QFGl8w0pB6ilG0VWz30H_X-k8TOsDfo-XwL9tXYDcUn6KCuSSGontYfWAqWh7mTiZ6KcZSyQCNzt18q_2ELO0CajDttYmgLF8GLm2aDDUTLGGIw-L_nVIk2imVspeskwT_URFcxxZiYeG4"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Elias Thorne</span>
+<span class="text-xs text-on-surface-variant">Lead Product Architect</span>
+</div>
+</div>
+</header>
+<!-- Clean Image Placeholder -->
+<figure class="mb-16 rounded-xl overflow-hidden bg-surface-container-low aspect-video relative group">
+<img alt="Abstract Architecture" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 transition-all duration-700" data-alt="Minimalist monochromatic building facade with sharp angles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAD3PlDmnNGqTKeEzErjSEvMRIo6opIbo-_z9vSyxvxiT69GHtivdpKlsaut6LnXuIUBK05Z15GO9_5YUJZR4l7ac4sK_3X_EuAd9dGqRwCrxnUkpsDyPt_UIDyIC-F4yMxLIhySyIWSwbmw1xG7Cpe9ISJ5YnA5Xl177Y18zylwvwZrL_iQrKoLBkdTUMGJOE1kU20jGSIet98oAJ8g_wL378G3xFmrQGjBY8uyUsFjr5cC28DBaoZkcEAulcjRPbvbVAy0sqSaI"/>
+<figcaption class="absolute bottom-4 left-4 text-[10px] text-white/70 font-medium">Fig 1. Minimalist concrete structure in Berlin.</figcaption>
+</figure>
+<!-- Structured Content -->
+<div class="prose max-w-none">
+<p>Brutalism in digital design is often misunderstood as a deliberate attempt at ugliness. However, its roots in architectural history suggest a different intent: honesty of materials and structure. In the digital realm, this translates to a rejection of the "saccharine" surfaces and artificial depth that have dominated the last decade of UI design.</p>
+<h2>1. Raw Functionality</h2>
+<p>Digital Brutalism prioritizes the function of information over its aesthetic presentation. This doesn't mean a lack of design; rather, it is a design philosophy where the grid, the typography, and the raw code are exposed as the primary expressive elements.</p>
+<h3>The Truth of the Grid</h3>
+<p>While standard modern design seeks to hide the underlying structure with soft shadows and organic shapes, Brutalism celebrates the hard edges. It acknowledges the digital nature of the canvas—the pixel, the coordinate, and the container.</p>
+<ul>
+<li>Elimination of unnecessary ornamentation (gradients, drop shadows).</li>
+<li>High contrast and bold, unyielding typography choices.</li>
+<li>Intentional use of "system" colors and standard HTML elements.</li>
+</ul>
+<p>By stripping away the decorative layers, we force the user to interact directly with the content. There is nowhere for poor information architecture to hide in a brutalist environment.</p>
+<h2>2. Intentional Friction</h2>
+<p>Modern UX is obsessed with "seamlessness." Brutalism suggests that a little friction can actually improve comprehension. When a UI isn't trying to be "friendly" or "invisible," it demands the user's active attention.</p>
+<div class="my-12 p-8 bg-surface-container-lowest rounded-xl shadow-sm border-l-4 border-primary">
+<p class="mb-0 italic text-lg leading-relaxed text-on-surface-variant">"Architecture should be about the user's experience of space, not just the visual object. Digital spaces are no different."</p>
+</div>
+<p>This approach isn't for every product. It works best for knowledge bases, editorial platforms, and creative studios—places where deep reading and contemplation are the goal, not rapid transactional efficiency.</p>
+</div>
+<!-- Tags & Footer Actions -->
+<footer class="mt-20 pt-8 border-t border-surface-container">
+<div class="flex flex-wrap gap-2 mb-12">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-[11px] font-medium rounded-full">#Minimalism</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-[11px] font-medium rounded-full">#Brutalism</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-[11px] font-medium rounded-full">#DesignSystem</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-[11px] font-medium rounded-full">#History</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="thumb_up">thumb_up</span>
+<span class="text-xs font-medium">1.2k</span>
+</button>
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-xs font-medium">42</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+</div>
+</footer>
+</article>
+<!-- Table of Contents (Right Sidebar) -->
+<aside class="hidden xl:block w-64 sticky top-32 h-fit">
+<nav class="space-y-6">
+<div>
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4">On This Page</h4>
+<ul class="space-y-3">
+<li>
+<a class="block text-[13px] font-medium text-on-surface border-l-2 border-primary pl-4 transition-all" href="#">Raw Functionality</a>
+</li>
+<li>
+<a class="block text-[13px] text-on-surface-variant hover:text-on-surface pl-4 border-l-2 border-transparent transition-all" href="#">The Truth of the Grid</a>
+</li>
+<li>
+<a class="block text-[13px] text-on-surface-variant hover:text-on-surface pl-4 border-l-2 border-transparent transition-all" href="#">Intentional Friction</a>
+</li>
+</ul>
+</div>
+<div class="pt-8">
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4">Related Notes</h4>
+<div class="space-y-4">
+<a class="block group" href="#">
+<p class="text-[11px] text-outline-variant uppercase mb-1">Principles</p>
+<p class="text-[13px] font-medium text-on-surface group-hover:text-primary transition-colors">Minimalism vs. Utility</p>
+</a>
+<a class="block group" href="#">
+<p class="text-[11px] text-outline-variant uppercase mb-1">Architecture</p>
+<p class="text-[13px] font-medium text-on-surface group-hover:text-primary transition-colors">Grid Systems in 2024</p>
+</a>
+</div>
+</div>
+<!-- Knowledge Node Card (Custom Component) -->
+<div class="mt-12 p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container/50 group hover:shadow-md transition-all duration-300">
+<span class="text-[10px] font-bold text-on-tertiary-container bg-tertiary-container px-2 py-0.5 rounded uppercase">Mastery</span>
+<h5 class="text-sm font-semibold text-on-surface mt-3 mb-2">Deep Work Protocol</h5>
+<p class="text-[12px] leading-relaxed text-on-surface-variant mb-4">A structured approach to focus for technical writers.</p>
+<a class="text-[11px] font-bold text-primary flex items-center gap-1 group-hover:gap-2 transition-all" href="#">
+                            View Node
+                            <span class="material-symbols-outlined text-xs" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</nav>
+</aside>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg px-6 py-4 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="description" style="font-variation-settings: 'FILL' 1;">description</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+</nav>
+</body></html>

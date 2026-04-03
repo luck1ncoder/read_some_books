@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡片模式 — 两种方案对比</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+    background: #f5f3ee;
+    color: #2d3338;
+    min-height: 100vh;
+  }
+
+  /* ── Tab switcher ── */
+  .tab-bar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: center; gap: 0;
+    background: rgba(245,243,238,0.92);
+    backdrop-filter: blur(12px);
+    padding: 20px 0 16px;
+    border-bottom: 1px solid rgba(45,51,56,0.06);
+  }
+  .tab-btn {
+    padding: 8px 28px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 500; letter-spacing: 0.02em;
+    background: none; color: #9aa3ab;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .tab-btn.active {
+    color: #3d3628; border-bottom-color: #7a6e5e;
+  }
+  .tab-btn:hover { color: #596065; }
+
+  .demo-panel { display: none; max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+  .demo-panel.active { display: block; }
+
+  .demo-title {
+    font-family: 'Noto Serif SC', Georgia, serif;
+    font-size: 18px; font-weight: 700; color: #3d3628;
+    margin-bottom: 6px;
+  }
+  .demo-desc {
+    font-size: 13px; color: #9aa3ab; margin-bottom: 28px; line-height: 1.6;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════════
+     方案 A：纵向卡片流 — "精华摘录"
+     ════════════════════════════════════════════════════════════════════════════ */
+
+  .card-feed { display: flex; flex-direction: column; gap: 20px; }
+
+  .essence-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(45,51,56,0.06);
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .essence-card:hover {
+    box-shadow: 0 6px 24px rgba(45,51,56,0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Quote strip */
+  .card-quote {
+    position: relative;
+    padding: 22px 26px 18px 26px;
+    background: linear-gradient(135deg, #fdfcf8 0%, #f8f5ee 100%);
+    border-bottom: 1px solid rgba(45,51,56,0.04);
+  }
+  .card-quote::before {
+    content: '"';
+    position: absolute; left: 14px; top: 8px;
+    font-family: Georgia, serif;
+    font-size: 48px; color: rgba(180,165,140,0.3);
+    line-height: 1;
+  }
+  .card-quote-text {
+    font-family: 'Noto Serif SC', Georgia, serif;
+    font-size: 15px; line-height: 1.8;
+    color: #3d3628; font-style: italic;
+  }
+
+  /* Card body */
+  .card-body { padding: 20px 26px; }
+
+  .card-title {
+    font-size: 14px; font-weight: 600; color: #2d3338;
+    margin-bottom: 10px; line-height: 1.45;
+  }
+
+  .card-ai-section {
+    margin-bottom: 14px;
+  }
+  .card-ai-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #b0a693;
+    margin-bottom: 5px;
+  }
+  .card-ai-text {
+    font-size: 13px; line-height: 1.7; color: #596065;
+  }
+
+  .card-intent {
+    display: inline-block;
+    font-size: 11.5px; color: #7a6e5e;
+    background: rgba(180,165,140,0.12);
+    border-radius: 6px; padding: 5px 12px;
+    margin-bottom: 14px; line-height: 1.5;
+  }
+
+  .card-note {
+    padding: 12px 14px;
+    background: #f9f9fb;
+    border-radius: 8px;
+    font-size: 13px; line-height: 1.65; color: #3d3628;
+    border-left: 2px solid #d4c9b0;
+    margin-bottom: 14px;
+  }
+  .card-note-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #b0a693;
+    margin-bottom: 4px;
+  }
+
+  /* Annotation thread (inline) */
+  .card-thread {
+    border-top: 1px solid rgba(45,51,56,0.06);
+    padding-top: 14px; margin-top: 4px;
+  }
+  .card-thread-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #a78bfa;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .card-thread-label .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #a78bfa;
+  }
+  .thread-msg {
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 12.5px; line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .thread-msg.user {
+    background: #f9f9fb;
+  }
+  .thread-msg.ai {
+    background: linear-gradient(135deg, #f0f4ff, #f5f0ff);
+    border-left: 2px solid #a78bfa;
+  }
+  .thread-msg .role {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 3px;
+  }
+  .thread-msg.user .role { color: #9aa3ab; }
+  .thread-msg.ai .role { color: #a78bfa; }
+
+  /* Card footer */
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 26px 16px;
+    font-size: 11px; color: #bcc1c6;
+  }
+  .card-tags { display: flex; gap: 5px; }
+  .card-tag {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #596065;
+    background: #ebeef2; border-radius: 4px; padding: 2px 7px;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════════
+     方案 B：折叠卡片列表 — "精华索引"
+     ════════════════════════════════════════════════════════════════════════════ */
+
+  .fold-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .fold-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(45,51,56,0.04);
+    transition: box-shadow 0.15s;
+  }
+  .fold-card:hover {
+    box-shadow: 0 2px 8px rgba(45,51,56,0.08);
+  }
+
+  /* Collapsed header */
+  .fold-header {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .fold-header:hover { background: rgba(180,165,140,0.04); }
+
+  .fold-marker {
+    width: 4px; flex-shrink: 0;
+    border-radius: 2px;
+    margin-top: 3px;
+    align-self: stretch;
+  }
+  .fold-marker.yellow { background: rgba(251,211,62,0.6); }
+  .fold-marker.purple { background: rgba(167,139,250,0.6); }
+
+  .fold-content { flex: 1; min-width: 0; }
+
+  .fold-quote {
+    font-family: 'Noto Serif SC', Georgia, serif;
+    font-size: 14px; line-height: 1.65; color: #3d3628;
+    margin-bottom: 4px;
+    overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+
+  .fold-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: #bcc1c6;
+  }
+  .fold-meta .has-note { color: #7a6e5e; }
+  .fold-meta .has-chat { color: #a78bfa; }
+
+  .fold-chevron {
+    flex-shrink: 0; width: 16px; height: 16px; margin-top: 4px;
+    color: #d1d5db; transition: transform 0.2s;
+  }
+  .fold-card.open .fold-chevron { transform: rotate(180deg); }
+
+  /* Expanded detail */
+  .fold-detail {
+    display: none;
+    padding: 0 18px 18px 34px;
+  }
+  .fold-card.open .fold-detail { display: block; }
+
+  .fold-ai {
+    margin-bottom: 12px;
+  }
+  .fold-ai-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #b0a693;
+    margin-bottom: 4px;
+  }
+  .fold-ai-text {
+    font-size: 13px; line-height: 1.7; color: #596065;
+  }
+
+  .fold-note {
+    padding: 10px 12px;
+    background: #f9f9fb;
+    border-radius: 6px;
+    border-left: 2px solid #d4c9b0;
+    font-size: 12.5px; line-height: 1.6; color: #3d3628;
+    margin-bottom: 12px;
+  }
+
+  .fold-thread {
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .fold-thread-msg {
+    padding: 7px 10px; border-radius: 6px;
+    font-size: 12px; line-height: 1.55;
+  }
+  .fold-thread-msg.user { background: #f5f5f7; }
+  .fold-thread-msg.ai {
+    background: linear-gradient(135deg, #f0f4ff, #f5f0ff);
+    border-left: 2px solid #a78bfa;
+  }
+  .fold-thread-msg .role {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 2px;
+  }
+  .fold-thread-msg.user .role { color: #9aa3ab; }
+  .fold-thread-msg.ai .role { color: #a78bfa; }
+
+  /* ── Page header bar (shared) ── */
+  .page-bar {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: rgba(255,254,249,0.7);
+    border: 1px solid rgba(180,165,140,0.15);
+    border-radius: 10px;
+  }
+  .page-bar-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #e8d5c0;
+  }
+  .page-bar-info { flex: 1; }
+  .page-bar-title {
+    font-size: 13px; font-weight: 600; color: #3d3628;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .page-bar-domain { font-size: 11px; color: #b0a693; }
+  .page-bar-count {
+    font-size: 12px; color: #9aa3ab;
+    padding: 3px 10px;
+    background: #f0ebe2;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Tab switcher -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showPanel('a')">方案 A · 纵向卡片流</button>
+  <button class="tab-btn" onclick="showPanel('b')">方案 B · 折叠卡片列表</button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     方案 A: 纵向卡片流
+     ════════════════════════════════════════════════════════════════════════════ -->
+<div id="panel-a" class="demo-panel active">
+  <div class="demo-title">方案 A · 精华卡片流</div>
+  <div class="demo-desc">每张卡片完整展示：划线原文 → AI 解读 → 笔记 → 批注对话。像 feed 一样纵向滚动浏览所有精华。</div>
+
+  <!-- Page header -->
+  <div class="page-bar">
+    <div class="page-bar-icon" style="background: #2F4F4F;">mp</div>
+    <div class="page-bar-info">
+      <div class="page-bar-title">Attention Is All You Need - Google Research</div>
+      <div class="page-bar-domain">arxiv.org</div>
+    </div>
+    <div class="page-bar-count">4 张卡片</div>
+  </div>
+
+  <div class="card-feed">
+
+    <!-- Card 1: Full card with AI + note + thread -->
+    <div class="essence-card">
+      <div class="card-quote">
+        <div class="card-quote-text">The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder.</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Transformer 架构的动机</div>
+        <div class="card-ai-section">
+          <div class="card-ai-label">① 局部含义</div>
+          <div class="card-ai-text">这句话点出了 Transformer 论文的核心出发点：当时主流的序列转导模型都依赖 RNN 或 CNN，而这些架构的固有限制（如 RNN 的顺序计算、CNN 的有限感受野）成为了性能瓶颈。</div>
+        </div>
+        <div class="card-ai-section">
+          <div class="card-ai-label">② 上下文解读</div>
+          <div class="card-ai-text">在论文的引言部分，作者通过这段描述建立了"为什么需要新架构"的论证基础。这不仅是技术背景介绍，更是为后文提出纯注意力机制（Self-Attention）做铺垫。</div>
+        </div>
+        <div class="card-intent">💡 划线意图：对比理解 — 抓住旧范式的局限性来理解新方案的价值</div>
+        <div class="card-note">
+          <div class="card-note-label">我的笔记</div>
+          所以 Transformer 本质上是要解决 RNN 无法并行、CNN 无法建模长距离依赖这两个核心问题。
+        </div>
+        <div class="card-thread">
+          <div class="card-thread-label"><span class="dot"></span>批注对话 · 2 条</div>
+          <div class="thread-msg user">
+            <div class="role">我</div>
+            为什么说 RNN 的顺序计算是瓶颈？并行化不行吗？
+          </div>
+          <div class="thread-msg ai">
+            <div class="role">AI</div>
+            RNN 的隐藏状态 h_t 依赖于 h_{t-1}，这种递推结构意味着每个时间步必须等前一步完成，无法在时间维度上并行。当序列很长时，训练效率极低。Transformer 的 Self-Attention 直接计算所有位置对之间的关系，完全可以并行。
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="card-tag">#深度学习</span>
+          <span class="card-tag">#架构设计</span>
+        </div>
+        <span>3月28日</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Only highlight + AI, no note/thread -->
+    <div class="essence-card">
+      <div class="card-quote">
+        <div class="card-quote-text">Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Self-Attention 的核心定义</div>
+        <div class="card-ai-section">
+          <div class="card-ai-label">① 局部含义</div>
+          <div class="card-ai-text">Self-Attention 的本质：让序列中的每个位置都能"看到"其他所有位置，从而学习到一个融合了全局上下文的表示。与传统注意力（如 encoder-decoder attention）不同，它关注的是同一序列内部的关系。</div>
+        </div>
+        <div class="card-intent">💡 划线意图：定义性知识 — 记住核心概念的精确表述</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags"><span class="card-tag">#注意力机制</span></div>
+        <span>3月28日</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Highlight + note only, no AI explanation -->
+    <div class="essence-card">
+      <div class="card-quote">
+        <div class="card-quote-text">We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Transformer 论文核心主张</div>
+        <div class="card-ai-section">
+          <div class="card-ai-label">① 局部含义</div>
+          <div class="card-ai-text">这一句是整篇论文最核心的主张：提出一种完全基于注意力机制的新架构，彻底抛弃了 RNN 的循环结构和 CNN 的卷积运算。"solely" 和 "entirely" 两个词体现了作者对设计纯粹性的追求。</div>
+        </div>
+        <div class="card-note">
+          <div class="card-note-label">我的笔记</div>
+          现在看来这个决定影响了整个 AI 领域。"simple" 这个词其实是整篇论文最精妙的描述 — 真正的简洁是最难的。
+        </div>
+        <div class="card-thread">
+          <div class="card-thread-label"><span class="dot"></span>批注对话 · 4 条</div>
+          <div class="thread-msg user">
+            <div class="role">我</div>
+            "dispensing with recurrence entirely" 是不是太绝对了？后来不是又有人把 RNN 加回来了吗
+          </div>
+          <div class="thread-msg ai">
+            <div class="role">AI</div>
+            确实有后续工作（如 Transformer-XL、RWKV）重新引入了类似循环的机制来处理超长序列。但原始 Transformer 的纯注意力设计证明了大多数任务不需要显式循环，这是范式转换的关键。
+          </div>
+          <div class="thread-msg user">
+            <div class="role">我</div>
+            所以 RWKV 算是一种"折中"？
+          </div>
+          <div class="thread-msg ai">
+            <div class="role">AI</div>
+            可以这么理解。RWKV 在推理时像 RNN（线性复杂度），训练时可以并行（类似 Transformer）。它试图结合两个范式的优点，但核心创新仍然建立在 Transformer 证明了"注意力足够"这个前提之上。
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="card-tag">#深度学习</span>
+          <span class="card-tag">#论文精读</span>
+        </div>
+        <span>3月28日</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Highlight only, minimal -->
+    <div class="essence-card">
+      <div class="card-quote">
+        <div class="card-quote-text">In this work, we show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing.</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Transformer 的泛化能力验证</div>
+        <div class="card-ai-section">
+          <div class="card-ai-label">① 局部含义</div>
+          <div class="card-ai-text">论文不仅证明 Transformer 在机器翻译上表现优异，还验证了它在句法分析（constituency parsing）任务上的泛化能力。这暗示了 Transformer 不是一个特定任务的优化方案，而是一种通用的序列建模架构。</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags"><span class="card-tag">#泛化性</span></div>
+        <span>3月28日</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     方案 B: 折叠卡片列表
+     ════════════════════════════════════════════════════════════════════════════ -->
+<div id="panel-b" class="demo-panel">
+  <div class="demo-title">方案 B · 精华索引</div>
+  <div class="demo-desc">默认折叠只显示划线原文，快速浏览所有精华要点。点击展开查看 AI 解读、笔记和批注对话。</div>
+
+  <!-- Page header -->
+  <div class="page-bar">
+    <div class="page-bar-icon" style="background: #2F4F4F;">mp</div>
+    <div class="page-bar-info">
+      <div class="page-bar-title">Attention Is All You Need - Google Research</div>
+      <div class="page-bar-domain">arxiv.org</div>
+    </div>
+    <div class="page-bar-count">4 张卡片</div>
+  </div>
+
+  <div class="fold-list">
+
+    <!-- Card 1: open by default to show detail -->
+    <div class="fold-card open">
+      <div class="fold-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="fold-marker purple"></div>
+        <div class="fold-content">
+          <div class="fold-quote">The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder.</div>
+          <div class="fold-meta">
+            <span>3月28日</span>
+            <span class="has-note">✎ 有笔记</span>
+            <span class="has-chat">● 2 条批注</span>
+          </div>
+        </div>
+        <svg class="fold-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fold-detail">
+        <div class="fold-ai">
+          <div class="fold-ai-label">AI 解读</div>
+          <div class="fold-ai-text">这句话点出了 Transformer 论文的核心出发点：当时主流的序列转导模型都依赖 RNN 或 CNN，而这些架构的固有限制成为了性能瓶颈。</div>
+        </div>
+        <div class="fold-note">
+          所以 Transformer 本质上是要解决 RNN 无法并行、CNN 无法建模长距离依赖这两个核心问题。
+        </div>
+        <div class="fold-thread">
+          <div class="fold-thread-msg user">
+            <div class="role">我</div>
+            为什么说 RNN 的顺序计算是瓶颈？
+          </div>
+          <div class="fold-thread-msg ai">
+            <div class="role">AI</div>
+            RNN 的隐藏状态 h_t 依赖于 h_{t-1}，每个时间步必须等前一步完成，无法在时间维度上并行。Transformer 的 Self-Attention 直接计算所有位置对之间的关系，完全可以并行。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: collapsed -->
+    <div class="fold-card">
+      <div class="fold-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="fold-marker yellow"></div>
+        <div class="fold-content">
+          <div class="fold-quote">Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.</div>
+          <div class="fold-meta">
+            <span>3月28日</span>
+          </div>
+        </div>
+        <svg class="fold-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fold-detail">
+        <div class="fold-ai">
+          <div class="fold-ai-label">AI 解读</div>
+          <div class="fold-ai-text">Self-Attention 的本质：让序列中的每个位置都能"看到"其他所有位置，从而学习到一个融合了全局上下文的表示。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: collapsed, with note + thread -->
+    <div class="fold-card">
+      <div class="fold-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="fold-marker purple"></div>
+        <div class="fold-content">
+          <div class="fold-quote">We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.</div>
+          <div class="fold-meta">
+            <span>3月28日</span>
+            <span class="has-note">✎ 有笔记</span>
+            <span class="has-chat">● 4 条批注</span>
+          </div>
+        </div>
+        <svg class="fold-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fold-detail">
+        <div class="fold-ai">
+          <div class="fold-ai-label">AI 解读</div>
+          <div class="fold-ai-text">这一句是整篇论文最核心的主张：提出一种完全基于注意力机制的新架构，彻底抛弃了 RNN 的循环结构和 CNN 的卷积运算。</div>
+        </div>
+        <div class="fold-note">
+          现在看来这个决定影响了整个 AI 领域。"simple" 这个词其实是整篇论文最精妙的描述 — 真正的简洁是最难的。
+        </div>
+        <div class="fold-thread">
+          <div class="fold-thread-msg user">
+            <div class="role">我</div>
+            "dispensing with recurrence entirely" 是不是太绝对了？
+          </div>
+          <div class="fold-thread-msg ai">
+            <div class="role">AI</div>
+            确实有后续工作重新引入了类似循环的机制。但原始 Transformer 证明了大多数任务不需要显式循环，这是范式转换的关键。
+          </div>
+          <div class="fold-thread-msg user">
+            <div class="role">我</div>
+            所以 RWKV 算是一种"折中"？
+          </div>
+          <div class="fold-thread-msg ai">
+            <div class="role">AI</div>
+            可以这么理解。RWKV 推理时像 RNN（线性复杂度），训练时可以并行（类似 Transformer）。它试图结合两个范式的优点。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: collapsed, minimal -->
+    <div class="fold-card">
+      <div class="fold-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="fold-marker yellow"></div>
+        <div class="fold-content">
+          <div class="fold-quote">In this work, we show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing.</div>
+          <div class="fold-meta">
+            <span>3月28日</span>
+          </div>
+        </div>
+        <svg class="fold-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fold-detail">
+        <div class="fold-ai">
+          <div class="fold-ai-label">AI 解读</div>
+          <div class="fold-ai-text">论文验证了 Transformer 在句法分析任务上的泛化能力，暗示它不是特定任务的优化方案，而是一种通用的序列建模架构。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPanel(id) {
+  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('panel-' + id).classList.add('active')
+  event.target.classList.add('active')
+}
+</script>
+
+</body>
+</html>
